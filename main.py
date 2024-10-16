@@ -1,13 +1,15 @@
 import time
 
 from download_pdf import download_pdf_file
-from get_collection_info import get_collection_info
-from get_collection_year import get_collection_year
-from get_next_page import get_next_page_url
-from get_soup import get_soup
 from get_starting_urls import get_starting_urls
 from model import CollectionPdf
-from switch_start_page_view import get_link_for_table_view
+from scrape import (
+    get_collection_info,
+    get_collection_year,
+    get_link_for_table_view,
+    get_next_page_url,
+    get_soup,
+)
 
 starting_urls_file_path: str = "starting_urls.txt"
 starting_urls: list = get_starting_urls(starting_urls_file_path)
