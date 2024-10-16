@@ -1,0 +1,20 @@
+[project]
+name = "dacoromanica_downloader"
+version = "0.0.1"
+description = "A package that automates downloding files from Dacoromanica"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/AndreiIav/dacoromanica_downloader"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true

@@ -1,9 +1,9 @@
 import time
 
-from download_pdf import download_pdf_file
-from get_starting_urls import get_starting_urls
-from model import CollectionPdf
-from scrape import (
+from dacoromanica_downloader.download_pdf import download_pdf_file
+from dacoromanica_downloader.get_starting_urls import get_starting_urls
+from dacoromanica_downloader.model import CollectionPdf
+from dacoromanica_downloader.scrape import (
     get_collection_info,
     get_collection_year,
     get_link_for_table_view,
