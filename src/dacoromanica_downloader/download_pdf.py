@@ -8,7 +8,7 @@ class PathTooLongError(Exception):
     shortened.
     """
 
-    def __init__(self, filename):
+    def __init__(self, filename: str) -> None:
         super().__init__(
             f"'{filename}' file name is too long and cannot be saved. File not"
             " downloaded."

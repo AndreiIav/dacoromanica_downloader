@@ -1,3 +1,5 @@
+from typing import Iterator
+
 import requests
 from bs4 import BeautifulSoup
 
@@ -9,17 +11,22 @@ def get_soup(url: str) -> BeautifulSoup:
     return soup
 
 
-def get_next_page_url(soup):
+def get_next_page_url(soup: BeautifulSoup) -> str | None:
     for link in soup.find_all("a"):
         if "func=results-next-page&result_format=001" in str(link.get("href")):
             # two "next_page" links exists on the page; we need only one
             # so return as soon as one is found
             link_string = str(link.get("href"))
             next_page_url = link_string
+
             return next_page_url
 
+    return None
 
-def get_collection_info(soup):
+
+def get_collection_info(
+    soup: BeautifulSoup,
+) -> Iterator[tuple[str, str, str, str]]:
     for link in soup.find_all("a"):
         if "base=GEN01" in str(link.get("href")):
             details_link = link.get("href")
@@ -39,7 +46,7 @@ def get_collection_info(soup):
             yield details_link, title, author, pdf_link
 
 
-def get_collection_year(link: str) -> str:
+def get_collection_year(link: str) -> str | None:
     r = requests.get(link)
     soup = BeautifulSoup(r.content.decode("utf-8"), "html5lib")
     alltd = soup.find_all("td")
@@ -47,12 +54,20 @@ def get_collection_year(link: str) -> str:
         if td.string == "Data apariţiei":
             parent = td.parent
             parent_alltd = parent.find_all("td")
-            return parent_alltd[1].string
+            collection_year = parent_alltd[1].string
+
+            return collection_year
+
+    return None
 
 
-def get_link_for_table_view(link: str) -> str:
+def get_link_for_table_view(link: str) -> str | None:
     r = requests.get(link)
     soup = BeautifulSoup(r.content.decode("utf-8"), "html5lib")
-    for link in soup.find_all("a"):
-        if "Tabel" in str(link.string):
-            return link.get("href")
+    for _link in soup.find_all("a"):
+        if "Tabel" in str(_link.string):
+            table_view_link = _link.get("href")
+
+            return table_view_link
+
+    return None

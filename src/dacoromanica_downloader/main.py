@@ -12,7 +12,7 @@ from dacoromanica_downloader.scrape import (
 )
 
 starting_urls_file_path: str = "starting_urls.txt"
-starting_urls: list = get_starting_urls(starting_urls_file_path)
+starting_urls: list[str] = get_starting_urls(starting_urls_file_path)
 
 for starting_url in starting_urls:
     url = get_link_for_table_view(starting_url)

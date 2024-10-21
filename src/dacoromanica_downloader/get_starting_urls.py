@@ -4,7 +4,7 @@ from pathlib import Path
 class EmptyFileError(Exception):
     """Raised when a file contains no data."""
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         super().__init__(f"'{name}' file contains no data.")
         self.name = name
 

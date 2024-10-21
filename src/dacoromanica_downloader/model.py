@@ -1,4 +1,6 @@
-from typing import Optional
+from __future__ import annotations
+
+from typing import Callable
 
 
 class CollectionPdf:
@@ -6,9 +8,9 @@ class CollectionPdf:
         self,
         details_link: str,
         title: str,
-        author: Optional[str] = "",
-        year: Optional[int] = 0,
-        pdf_link: Optional[str] = None,
+        pdf_link: str,
+        author: str = "",
+        year: int = 0,
     ):
         self.details_link = details_link
         self.title = title
@@ -22,21 +24,23 @@ class CollectionPdf:
     def __str__(self) -> str:
         return f"title: {self.title}, author: {self.author}, year: {self.year}"
 
-    def __gt__(self, other) -> bool:
+    def __gt__(self, other: CollectionPdf) -> bool:
         if self.year is None:
             return False
         if other.year is None:
             return True
         return self.year > other.year
 
-    def update_collection_year(self, fn_get_collection_year) -> None:
+    def update_collection_year(
+        self, fn_get_collection_year: Callable[[str], str | None]
+    ) -> None:
         link = self.details_link
         year = fn_get_collection_year(link)
         if year:
             self.year = self._format_year(year)
 
     @property
-    def downloaded_file_name(self):
+    def downloaded_file_name(self) -> str:
         title = self._remove_forbidden_charactes(self.title)
         author = self._remove_forbidden_charactes(self.author)
 
