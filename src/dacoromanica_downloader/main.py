@@ -12,15 +12,15 @@ from dacoromanica_downloader.scrape import (
 )
 
 starting_urls_file_path: str = "starting_urls.txt"
-starting_urls: list[str] = get_starting_urls(starting_urls_file_path)
+starting_urls: list[str] = get_starting_urls(urls_file_path=starting_urls_file_path)
 
 for starting_url in starting_urls:
-    url = get_link_for_table_view(starting_url)
+    url = get_link_for_table_view(link=starting_url)
     all_collections = []
 
     while url:
         print(url)
-        soup = get_soup(url)
+        soup = get_soup(url=url)
         all_collections_on_page_details = get_collection_info(soup)
         for collection_details in all_collections_on_page_details:
             new_collection = CollectionPdf(
@@ -31,7 +31,7 @@ for starting_url in starting_urls:
             )
             all_collections.append(new_collection)
 
-        url = get_next_page_url(soup)
+        url = get_next_page_url(soup=soup)
         if url is None:
             break
         time.sleep(1)
@@ -39,13 +39,15 @@ for starting_url in starting_urls:
     print(f"All collections length is: {len(all_collections)}")
 
     for collection in all_collections:
-        collection.update_collection_year(get_collection_year)
+        collection.update_collection_year(fn_get_collection_year=get_collection_year)
         time.sleep(1)
 
     sorted_collections = sorted(all_collections, key=lambda x: (x.year, x.author))
 
     for collection in sorted_collections:
         download_pdf_file(
-            collection.pdf_link, collection.downloaded_file_name, "downloaded_files"
+            pdf_link=collection.pdf_link,
+            pdf_name=collection.downloaded_file_name,
+            destination_folder="downloaded_files",
         )
         time.sleep(3)

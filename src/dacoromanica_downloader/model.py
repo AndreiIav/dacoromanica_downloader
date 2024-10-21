@@ -37,12 +37,12 @@ class CollectionPdf:
         link = self.details_link
         year = fn_get_collection_year(link)
         if year:
-            self.year = self._format_year(year)
+            self.year = self._format_year(year_to_format=year)
 
     @property
     def downloaded_file_name(self) -> str:
-        title = self._remove_forbidden_charactes(self.title)
-        author = self._remove_forbidden_charactes(self.author)
+        title = self._remove_forbidden_charactes(name=self.title)
+        author = self._remove_forbidden_charactes(name=self.author)
 
         if self.year and author:
             return f"{author}_{title}_{self.year}.pdf"
@@ -66,11 +66,11 @@ class CollectionPdf:
 
         return res
 
-    def _format_year(self, yr: str) -> int:
+    def _format_year(self, year_to_format: str) -> int:
         year = ""
-        for x in yr:
-            if x.isdigit():
-                year += x
+        for character in year_to_format:
+            if character.isdigit():
+                year += character
 
         try:
             res = int(year[:4])
