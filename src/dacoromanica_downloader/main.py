@@ -24,11 +24,12 @@ for starting_url in starting_urls:
         all_collections_on_page_details = get_collection_info(soup)
         for collection_details in all_collections_on_page_details:
             new_collection = CollectionPdf(
-                details_link=collection_details[0],
-                title=collection_details[1],
-                author=collection_details[2],
-                pdf_link=collection_details[3],
+                details_link=collection_details.details_link,
+                title=collection_details.title,
+                pdf_link=collection_details.pdf_link,
+                author=collection_details.author,
             )
+
             all_collections.append(new_collection)
 
         url = get_next_page_url(soup=soup)

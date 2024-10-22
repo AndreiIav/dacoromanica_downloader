@@ -1,4 +1,4 @@
-from typing import Iterator
+from collections import namedtuple
 
 import requests
 from bs4 import BeautifulSoup
@@ -26,24 +26,25 @@ def get_next_page_url(soup: BeautifulSoup) -> str | None:
 
 def get_collection_info(
     soup: BeautifulSoup,
-) -> Iterator[tuple[str, str, str, str]]:
+):
+    CollectionInfo = namedtuple(
+        "CollectionInfo", ["details_link", "title", "author", "pdf_link"]
+    )
     for link in soup.find_all("a"):
         if "base=GEN01" in str(link.get("href")):
             details_link = link.get("href")
-
             parent = link.parent.parent
             alltd = parent.find_all("td")
-
             title = alltd[2].string
-
             if alltd[3].string:
                 author = alltd[3].string
             else:
                 author = ""
-
             pdf_link = alltd[6].find("a").get("href")
 
-            yield details_link, title, author, pdf_link
+            yield CollectionInfo(
+                details_link=details_link, title=title, author=author, pdf_link=pdf_link
+            )
 
 
 def get_collection_year(link: str) -> str | None:
