@@ -17,6 +17,35 @@ class PathTooLongError(Exception):
         self.filename = filename
 
 
+def get_link_response(link: str) -> requests.Response | str:
+    """
+    Retrieves the HTTP response from the provided URL or returns a string
+    containing exception message if an exception occurs.
+
+    This function attempts to fetch the response from a link using the requests
+    library. If the request fails due to an exception (e.g., connection errors,
+    timeouts), the function returns the exception message.
+
+    Args:
+        link (str): The URL of the file to retrieve.
+
+    Returns:
+        requests.Response | str: The HTTP response object if the request is
+        successful, otherwise a string with exception message.
+    """
+    try:
+        response = requests.get(link, timeout=20)
+        return response
+    except requests.exceptions.HTTPError as e:
+        return f"HTTPError {e}"
+    except requests.exceptions.ConnectionError as e:
+        return f"ConnectionError {e}"
+    except requests.exceptions.Timeout as e:
+        return f"Timeout exception {e}"
+    except requests.exceptions.RequestException as e:
+        return f"RequestException {e}"
+
+
 def shorten_filename(filename: Path) -> tuple[Path, str]:
     """
     Shortens the given file path to comply with Windows path length limitations.
@@ -59,69 +88,63 @@ def shorten_filename(filename: Path) -> tuple[Path, str]:
         i = len(filename_name_without_extension) - shortening_length
         new_filename_name = filename_name_without_extension[:i] + ".pdf"
     else:
-        raise PathTooLongError(filename)
+        raise PathTooLongError(str(filename))
 
     formated_filename = filename_parent / new_filename_name
 
     return formated_filename, new_filename_name
 
 
-def download_pdf_file(
-    pdf_link: str,
-    pdf_name: str,
-    destination_folder: str,
-    shorten_filename_fn: Callable[[Path], tuple[Path, str]] = shorten_filename,
-) -> None:
+def download_file(filename: Path, http_response: requests.Response) -> None:
     """
-    Downloads a PDF file from a given URL, optionally shortens the filename, and
-    saves it to a specified destination.
+    Saves the content from an HTTP response to a file using the pathlib and
+    requests libraries.
 
-    This function retrieves a PDF file from the provided URL and saves it with
-    the specified file name in the designated folder. If the resulting file path
-    exceeds length limitations, a custom filename shortening function is applied
-    to ensure compliance with path length constraints. If the file already exists
-    it doesn't download it again. If the download is unsuccessful or the file
-    cannot be saved, appropriate exceptions are raised.
+    This function writes the data from the provided HTTP response to the
+    specified file path. The file is created at the given path, and the content
+    from the response is written to it.
 
     Args:
-        pdf_link (str): The URL of the PDF file to be downloaded.
-        pdf_name (str): The name to save the PDF file as, including the '.pdf'
-        extension.
+        filename (Path): The file path where the content will be saved.
+        http_response (requests.Response): The HTTP response object containing
+        the file content.
+
+    Returns:
+        None: This function does not return any value.
+    """
+    filename.write_bytes(http_response.content)
+
+
+def download_collection_pdf(
+    pdf_link: str, pdf_name: str, destination_folder: str
+) -> None:
+    """
+    Downloads a PDF from a specified URL, applies optional filename shortening,
+    and saves it to a destination folder.
+
+    This function orchestrates the download of a PDF file from a given link by
+    calling a series of helper functions. It retrieves the HTTP response for the
+    PDF link, then shortens the filename if needed, checks if the file already
+    exists and finally saves the PDF content to the specified destination folder.
+
+    Args:
+        pdf_link (str): The URL of the PDF file to download.
+        pdf_name (str): The desired name for the saved PDF file, including the
+        '.pdf' extension.
         destination_folder (str): The path to the folder where the PDF file will
         be saved.
-        shorten_filename_fn (Callable[[Path], tuple[Path, str]]): A function to
-        shorten the filename if the path exceeds system limitations. Defaults to
-        'shorten_filename'.
 
     Returns:
         None: This function does not return any value.
 
     Raises:
-        Various exceptions may be raised if the download or file writing process
-        fails, such as requests.exceptions.RequestException for network-related
-        errors or IOError for file system errors.
+        PathTooLongError: If the filename cannot be shortened to meet system
+        path length limitations.
     """
-    try:
-        r = requests.get(pdf_link, stream=True)
-    except requests.exceptions.HTTPError as e:
-        print(
-            f"'{pdf_name}' file not downloaded. The following exception occurred: {e}"
-        )
-        return
-    except requests.exceptions.ConnectionError as e:
-        print(
-            f"'{pdf_name}' file not downloaded. The following exception occurred: {e}"
-        )
-        return
-    except requests.exceptions.Timeout as e:
-        print(
-            f"'{pdf_name}' file not downloaded. The following exception occurred: {e}"
-        )
-        return
-    except requests.exceptions.RequestException as e:
-        print(
-            f"'{pdf_name}' file not downloaded. The following exception occurred: {e}"
-        )
+
+    http_response = get_link_response(link=pdf_link)
+    if not isinstance(http_response, requests.Response):
+        print(f"'{pdf_name}' was not downloaded due to this error: {http_response} .")
         return
 
     filename = (Path(destination_folder) / pdf_name).absolute()
@@ -143,6 +166,7 @@ def download_pdf_file(
             f"'{pdf_name}' already present in '{destination_folder}' folder"
             " so it will not be downloaded."
         )
-    else:
-        filename.write_bytes(r.content)
-        print(f"'{pdf_name}' downloaded in '{destination_folder}' folder.")
+        return
+
+    download_file(filename=filename, http_response=http_response)
+    print(f"'{pdf_name}' downloaded in '{destination_folder}' folder.")

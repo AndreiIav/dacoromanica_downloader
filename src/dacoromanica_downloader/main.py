@@ -1,6 +1,6 @@
 import time
 
-from dacoromanica_downloader.download_pdf import download_pdf_file
+from dacoromanica_downloader.download_pdf import download_collection_pdf
 from dacoromanica_downloader.get_starting_urls import get_starting_urls
 from dacoromanica_downloader.model import CollectionPdf
 from dacoromanica_downloader.scrape import (
@@ -46,7 +46,7 @@ for starting_url in starting_urls:
     sorted_collections = sorted(all_collections, key=lambda x: (x.year, x.author))
 
     for collection in sorted_collections:
-        download_pdf_file(
+        download_collection_pdf(
             pdf_link=collection.pdf_link,
             pdf_name=collection.downloaded_file_name,
             destination_folder="downloaded_files",
