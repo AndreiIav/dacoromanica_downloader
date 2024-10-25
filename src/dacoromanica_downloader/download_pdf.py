@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Callable
 
 import requests
 
@@ -46,7 +45,7 @@ def get_link_response(link: str) -> requests.Response | str:
         return f"RequestException {e}"
 
 
-def shorten_filename(filename: Path) -> tuple[Path, str]:
+def shorten_filename(filename: Path) -> Path:
     """
     Shortens the given file path to comply with Windows path length limitations.
 
@@ -92,7 +91,7 @@ def shorten_filename(filename: Path) -> tuple[Path, str]:
 
     formated_filename = filename_parent / new_filename_name
 
-    return formated_filename, new_filename_name
+    return formated_filename
 
 
 def download_file(filename: Path, http_response: requests.Response) -> None:
@@ -155,7 +154,8 @@ def download_collection_pdf(
     if len(str(filename)) > 250:
         try:
             old_pdf_name = pdf_name
-            filename, pdf_name = shorten_filename(filename=filename)
+            filename = shorten_filename(filename=filename)
+            pdf_name = filename.name
             print(f"'{old_pdf_name}' file name was shortened to: '{pdf_name}'")
         except PathTooLongError as e:
             print(e)
