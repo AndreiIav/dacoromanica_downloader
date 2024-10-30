@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Callable
 
 import requests
 
@@ -16,24 +17,30 @@ class PathTooLongError(Exception):
         self.filename = filename
 
 
-def get_link_response(link: str) -> requests.Response | str:
+def get_link_response(
+    link: str, get_request: Callable = requests.get
+) -> requests.Response | str:
     """
     Retrieves the HTTP response from the provided URL or returns a string
     containing exception message if an exception occurs.
 
-    This function attempts to fetch the response from a link using the requests
-    library. If the request fails due to an exception (e.g., connection errors,
-    timeouts), the function returns the exception message.
+    This function attempts to fetch the HTTP response for the given URL using
+    a specified HTTP GET request function, defaulting to `requests.get`. If the
+    request fails due to an exception (e.g., connection errors, timeouts), the
+    function returns the exception message.
 
     Args:
         link (str): The URL of the file to retrieve.
+        get_request (callable, optional): The function to use for making the GET
+        request, defaulting to `requests.get`. The function should accept a URL
+        as a parameter and return a response object.
 
     Returns:
         requests.Response | str: The HTTP response object if the request is
         successful, otherwise a string with exception message.
     """
     try:
-        response = requests.get(link, timeout=20)
+        response = get_request(link, timeout=20)
         return response
     except requests.exceptions.HTTPError as e:
         return f"HTTPError {e}"
@@ -115,7 +122,10 @@ def download_file(filename: Path, http_response: requests.Response) -> None:
 
 
 def download_collection_pdf(
-    pdf_link: str, pdf_name: str, destination_folder: str
+    pdf_link: str,
+    pdf_name: str,
+    destination_folder: str,
+    fn_get_response: Callable[[str], requests.Response | str] = get_link_response,
 ) -> None:
     """
     Downloads a PDF from a specified URL, applies optional filename shortening,
@@ -132,6 +142,10 @@ def download_collection_pdf(
         '.pdf' extension.
         destination_folder (str): The path to the folder where the PDF file will
         be saved.
+        fn_get_link_response (Callable[[str], requests.Response | str]): A
+        function to fetch the HTTP response from the PDF link, returning a
+        string with the exception message if an error occurs. Defaults to
+        'get_link_response'.
 
     Returns:
         None: This function does not return any value.
@@ -141,7 +155,7 @@ def download_collection_pdf(
         path length limitations.
     """
 
-    http_response = get_link_response(link=pdf_link)
+    http_response = fn_get_response(link=pdf_link)
     if not isinstance(http_response, requests.Response):
         print(f"'{pdf_name}' was not downloaded due to this error: {http_response} .")
         return
