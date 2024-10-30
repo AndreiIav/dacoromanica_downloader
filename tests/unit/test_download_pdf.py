@@ -1,6 +1,11 @@
 import pytest
+import requests
 
-from dacoromanica_downloader.download_pdf import PathTooLongError, shorten_filename
+from dacoromanica_downloader.download_pdf import (
+    PathTooLongError,
+    get_link_response,
+    shorten_filename,
+)
 
 
 class TestShortenFilename:
@@ -42,3 +47,16 @@ class TestShortenFilename:
             f"'{filename}' file name is too long and cannot be saved."
             " File not downloaded." in str(e.value)
         )
+
+
+class TestGetLinkResponse:
+    @pytest.mark.parametrize("test_file", ["test_page.html"])
+    def test_get_link_response_returns_response_object_when_successful(
+        self, access_local_file_with_requests, get_path_to_test_file
+    ):
+        file_link = get_path_to_test_file
+
+        response = get_link_response(file_link, access_local_file_with_requests)
+
+        assert isinstance(response, requests.Response)
+        assert response.status_code == 200
