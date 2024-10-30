@@ -10,7 +10,7 @@ from dacoromanica_downloader.download_pdf import (
 
 @pytest.mark.parametrize("test_file", ["test.pdf"])
 def test_download_collection_pdf(
-    access_local_file_with_requests, get_path_to_test_file, tmp_path
+    access_local_file_with_requests, get_path_to_test_file, tmp_path, capsys
 ):
     pdf_link = get_path_to_test_file
     pdf_name = "test_pdf_name.pdf"
@@ -26,5 +26,8 @@ def test_download_collection_pdf(
         fn_get_response=new_fn_get_link_response,
     )
 
-    dest_path = tmp_path / pdf_name
-    assert dest_path.is_file()
+    destination_path = tmp_path / pdf_name
+    out, _ = capsys.readouterr()
+
+    assert destination_path.is_file()
+    assert f"'{pdf_name}' downloaded in '{destination_folder}' folder." in out
