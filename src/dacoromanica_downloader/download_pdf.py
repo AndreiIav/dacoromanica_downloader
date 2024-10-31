@@ -52,7 +52,7 @@ def get_link_response(
         return f"RequestException {e}"
 
 
-def shorten_filename(filename: Path) -> Path:
+def shorten_filename(filename: Path, path_length_limit: int = 250) -> Path:
     """
     Shortens the given file path to comply with Windows path length limitations.
 
@@ -75,8 +75,8 @@ def shorten_filename(filename: Path) -> Path:
     """
 
     # The limit for file names on Windows is 256 but we are setting the limit to
-    # 250 characters
-    LIMIT = 250
+    # 250 characters by default
+    LIMIT = path_length_limit
 
     # Determine by how many characters should the filename be shortened
     shortening_length = len(str(filename)) - LIMIT
@@ -126,6 +126,7 @@ def download_collection_pdf(
     pdf_name: str,
     destination_folder: str,
     fn_get_response: Callable[[str], requests.Response | str] = get_link_response,
+    path_length_limit: int = 250,
 ) -> None:
     """
     Downloads a PDF from a specified URL, applies optional filename shortening,
@@ -165,10 +166,12 @@ def download_collection_pdf(
     # check if the length of the path is greater than 250 characters and try to
     # shorten it if it is (the maximum path length on Windows is 256 but we
     # set the limit to 250). If it cannot be shortened don't download the file.
-    if len(str(filename)) > 250:
+    if len(str(filename)) > path_length_limit:
         try:
             old_pdf_name = pdf_name
-            filename = shorten_filename(filename=filename)
+            filename = shorten_filename(
+                filename=filename, path_length_limit=path_length_limit
+            )
             pdf_name = filename.name
             print(f"'{old_pdf_name}' file name was shortened to: '{pdf_name}'")
         except PathTooLongError as e:
