@@ -43,13 +43,13 @@ def get_link_response(
         response = get_request(link, timeout=20)
         return response
     except requests.exceptions.HTTPError as e:
-        return f"HTTPError {e}"
+        return f"HTTPError : {e}"
     except requests.exceptions.ConnectionError as e:
-        return f"ConnectionError {e}"
+        return f"ConnectionError : {e}"
     except requests.exceptions.Timeout as e:
-        return f"Timeout exception {e}"
+        return f"Timeout exception : {e}"
     except requests.exceptions.RequestException as e:
-        return f"RequestException {e}"
+        return f"RequestException : {e}"
 
 
 def shorten_filename(filename: Path, path_length_limit: int = 250) -> Path:
