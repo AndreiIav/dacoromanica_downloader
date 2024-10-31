@@ -22,13 +22,13 @@ def get_soup(
 
     Args:
         url (str): The URL of the webpage to retrieve.
-        fn_get_response (Callable): A function that makes the call to the URL,
-            returning a 'requests.Response' or an error message if a an exception
-            was raised during the call. Defaults to `get_link_response`.
+        fn_get_response (Callable): A function used to fetch the HTTP response
+        for the URL, returning a 'requests.Response' or an error message if a an
+        exception was raised during the call. Defaults to 'get_link_response'.
 
     Returns:
         BeautifulSoup: A BeautifulSoup object representing the parsed HTML of
-            the webpage.
+        the webpage.
     """
     response = fn_get_response(url)
     if not isinstance(response, requests.Response):
@@ -40,12 +40,26 @@ def get_soup(
 
 
 def get_next_page_url(soup: BeautifulSoup) -> str | None:
+    """
+    Extracts URL from a BeautifulSoup object, if available.
+
+    This function searches the parsed HTML content (BeautifulSoup object) for
+    a link to the next page. If a "next page" URL is found, it returns the URL
+    as a string; otherwise, it returns None.
+
+    Args:
+        soup (BeautifulSoup): The BeautifulSoup object containing the parsed
+        HTML content.
+
+    Returns:
+        str | None: The URL of the next page as a string if found, otherwise
+        None.
+    """
     for link in soup.find_all("a"):
         if "func=results-next-page&result_format=001" in str(link.get("href")):
             # two "next_page" links exists on the page; we need only one
             # so return as soon as one is found
-            link_string = str(link.get("href"))
-            next_page_url = link_string
+            next_page_url = str(link.get("href"))
 
             return next_page_url
 
