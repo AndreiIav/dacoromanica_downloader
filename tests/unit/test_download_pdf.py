@@ -62,6 +62,76 @@ class TestGetLinkResponse:
         assert isinstance(response, requests.Response)
         assert response.status_code == 200
 
+    def test_get_link_response_returns_error_message_if_HTTPError_is_raised(self):
+        file_link = "file_link"
+
+        error_message = "a HTTPError occurred"
+
+        def get_request_returns_error_message(
+            link, timeout, error_message=error_message
+        ):
+            raise requests.exceptions.HTTPError(error_message)
+
+        response = get_link_response(
+            file_link, get_request=get_request_returns_error_message
+        )
+
+        assert isinstance(response, str)
+        assert f"HTTPError : {error_message}" in response
+
+    def test_get_link_response_returns_error_message_if_ConnectionError_is_raised(self):
+        file_link = "file_link"
+
+        error_message = "a ConnectionError occurred"
+
+        def get_request_returns_error_message(
+            link, timeout, error_message=error_message
+        ):
+            raise requests.exceptions.ConnectionError(error_message)
+
+        response = get_link_response(
+            file_link, get_request=get_request_returns_error_message
+        )
+
+        assert isinstance(response, str)
+        assert f"ConnectionError : {error_message}" in response
+
+    def test_get_link_response_returns_error_message_if_Timeout_is_raised(self):
+        file_link = "file_link"
+
+        error_message = "a Timeout occurred"
+
+        def get_request_returns_error_message(
+            link, timeout, error_message=error_message
+        ):
+            raise requests.exceptions.Timeout(error_message)
+
+        response = get_link_response(
+            file_link, get_request=get_request_returns_error_message
+        )
+
+        assert isinstance(response, str)
+        assert f"Timeout exception : {error_message}" in response
+
+    def test_get_link_response_returns_error_message_if_RequestException_is_raised(
+        self,
+    ):
+        file_link = "file_link"
+
+        error_message = "a RequestException occurred"
+
+        def get_request_returns_error_message(
+            link, timeout, error_message=error_message
+        ):
+            raise requests.exceptions.RequestException(error_message)
+
+        response = get_link_response(
+            file_link, get_request=get_request_returns_error_message
+        )
+
+        assert isinstance(response, str)
+        assert f"RequestException : {error_message}" in response
+
 
 class TestDownloadFile:
     @pytest.mark.parametrize("test_file", ["test.pdf"])
