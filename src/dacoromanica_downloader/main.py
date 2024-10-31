@@ -21,6 +21,9 @@ for starting_url in starting_urls:
     while url:
         print(url)
         soup = get_soup(url=url)
+        if isinstance(soup, str):
+            print(f"{url} could not be accessed due to this error: {soup}")
+            break
         all_collections_on_page_details = get_collection_info(soup)
         for collection_details in all_collections_on_page_details:
             new_collection = CollectionPdf(

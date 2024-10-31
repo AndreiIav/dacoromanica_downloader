@@ -1,12 +1,40 @@
 from collections import namedtuple
+from typing import Callable, Optional
 
 import requests
 from bs4 import BeautifulSoup
 
+from dacoromanica_downloader.download_pdf import get_link_response
 
-def get_soup(url: str) -> BeautifulSoup:
-    r = requests.get(url)
-    soup = BeautifulSoup(r.content.decode("utf-8"), "html5lib")
+
+def get_soup(
+    url: str,
+    fn_get_response: Callable[
+        [str, Optional[Callable]], requests.Response | str
+    ] = get_link_response,
+) -> BeautifulSoup:
+    """
+    Fetches the HTML content of a webpage at the specified URL and returns it as
+    a BeautifulSoup object.
+
+    This function uses a custom function to retrieve the response for the given
+    URL. If no custom function is provided, it defaults to `get_link_response`.
+
+    Args:
+        url (str): The URL of the webpage to retrieve.
+        fn_get_response (Callable): A function that makes the call to the URL,
+            returning a 'requests.Response' or an error message if a an exception
+            was raised during the call. Defaults to `get_link_response`.
+
+    Returns:
+        BeautifulSoup: A BeautifulSoup object representing the parsed HTML of
+            the webpage.
+    """
+    response = fn_get_response(url)
+    if not isinstance(response, requests.Response):
+        return response
+
+    soup = BeautifulSoup(response.content.decode("utf-8"), "html5lib")
 
     return soup
 
