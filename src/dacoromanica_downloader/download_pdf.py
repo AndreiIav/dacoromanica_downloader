@@ -64,10 +64,10 @@ def shorten_filename(filename: Path, path_length_limit: int = 250) -> Path:
 
     Args:
         filename (Path): The absolute file path to be shortened.
+        path_length_limit (int): The accepted file path limit. Defaults to 250.
 
     Returns:
-        tuple[Path, str]: A tuple containing the shortened file path and the
-        truncated portion of the filename.
+        Path: The shortened file path.
 
     Raises:
         PathTooLongError: If the file path cannot be shortened to meet the 250
@@ -147,6 +147,7 @@ def download_collection_pdf(
         function to fetch the HTTP response from the PDF link, returning a
         string with the exception message if an error occurs. Defaults to
         'get_link_response'.
+        path_length_limit (int): The accepted file path limit. Defaults to 250.
 
     Returns:
         None: This function does not return any value.
