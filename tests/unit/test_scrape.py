@@ -111,3 +111,23 @@ class TestGetCollectionYear:
         res = get_collection_year(link, new_fn_get_link_response)
 
         assert res == "2023"
+
+    def test_get_collection_year_returns_None_if_exception_occurs(self):
+        link = "link"
+
+        res = get_collection_year(link)
+
+        assert res is None
+
+    @pytest.mark.parametrize("test_file", ["test_page.html"])
+    def test_get_collection_year_returns_None_if_year_is_not_found(
+        self, get_path_to_test_file, access_local_file_with_requests
+    ):
+        link = get_path_to_test_file
+        new_fn_get_link_response = partial(
+            get_link_response, get_request=access_local_file_with_requests
+        )
+
+        res = get_collection_year(link, new_fn_get_link_response)
+
+        assert res is None
