@@ -145,9 +145,35 @@ def get_collection_year(
     return None
 
 
-def get_link_for_table_view(link: str) -> str | None:
-    r = requests.get(link)
-    soup = BeautifulSoup(r.content.decode("utf-8"), "html5lib")
+def get_link_for_table_view(
+    link: str,
+    fn_get_response: Callable[
+        [str, Optional[Callable]], requests.Response | str
+    ] = get_link_response,
+) -> str | None:
+    """
+    Retrieves the URL for the table view from an URL.
+
+    This function fetches HTML content from the provided URL and searches for
+    the table view URL. It returns the link as a string, or, if an HTTP
+    exception occurs or the link is not found, None. A custom function can be
+    provided to handle the HTTP request, defaulting to 'get_link_response'.
+
+    Args:
+        link (str): The URL of the page from which to retrieve the table view
+        link.
+        fn_get_response (Callable): A function to fetch the HTTP response for
+        the URL. Defaults to 'get_link_response'.
+
+    Returns:
+        str | None: The URL for the table view as a string if found, or None if
+        it was not found or an HTTP exception occurred.
+    """
+    response = fn_get_response(link)
+    if not isinstance(response, requests.Response):
+        return None
+
+    soup = BeautifulSoup(response.content.decode("utf-8"), "html5lib")
     for _link in soup.find_all("a"):
         if "Tabel" in str(_link.string):
             table_view_link = _link.get("href")

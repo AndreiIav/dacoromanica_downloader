@@ -7,6 +7,7 @@ from dacoromanica_downloader.download_pdf import get_link_response
 from dacoromanica_downloader.scrape import (
     get_collection_info,
     get_collection_year,
+    get_link_for_table_view,
     get_next_page_url,
     get_soup,
 )
@@ -129,5 +130,40 @@ class TestGetCollectionYear:
         )
 
         res = get_collection_year(link, new_fn_get_link_response)
+
+        assert res is None
+
+
+class TestGetLinkForTableView:
+    @pytest.mark.parametrize("test_file", ["test_get_link_for_table_view.html"])
+    def test_get_link_for_table_view_gets_link(
+        self, get_path_to_test_file, access_local_file_with_requests
+    ):
+        link = get_path_to_test_file
+        new_fn_get_link_response = partial(
+            get_link_response, get_request=access_local_file_with_requests
+        )
+
+        res = get_link_for_table_view(link, new_fn_get_link_response)
+
+        assert res == "table_view_link.html"
+
+    def test_get_link_for_table_view_returns_None_if_exception_occurs(self):
+        link = "link"
+
+        res = get_link_for_table_view(link)
+
+        assert res is None
+
+    @pytest.mark.parametrize("test_file", ["test_page.html"])
+    def test_get_link_for_table_view_returns_None_if_link_not_found(
+        self, get_path_to_test_file, access_local_file_with_requests
+    ):
+        link = get_path_to_test_file
+        new_fn_get_link_response = partial(
+            get_link_response, get_request=access_local_file_with_requests
+        )
+
+        res = get_link_for_table_view(link, new_fn_get_link_response)
 
         assert res is None
