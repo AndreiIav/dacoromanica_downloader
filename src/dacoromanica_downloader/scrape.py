@@ -69,6 +69,22 @@ def get_next_page_url(soup: BeautifulSoup) -> str | None:
 def get_collection_info(
     soup: BeautifulSoup,
 ):
+    """
+    Yields information about each item in a collection from parsed HTML content.
+
+    This generator function extracts specific details for each item in a
+    collection represented in the HTML content of a BeautifulSoup object. For
+    each item, it yields a named tuple containing the item's link, title,
+    author, and a link to its PDF file.
+
+    Args:
+        soup (BeautifulSoup): The BeautifulSoup object containing the parsed
+        HTML content.
+
+    Yields:
+        CollectionInfo (namedtuple): A named tuple with the following
+        attributes: 'details_link', 'title', 'author', and 'pdf_link'.
+    """
     CollectionInfo = namedtuple(
         "CollectionInfo", ["details_link", "title", "author", "pdf_link"]
     )

@@ -4,7 +4,11 @@ import pytest
 from bs4 import BeautifulSoup
 
 from dacoromanica_downloader.download_pdf import get_link_response
-from dacoromanica_downloader.scrape import get_next_page_url, get_soup
+from dacoromanica_downloader.scrape import (
+    get_collection_info,
+    get_next_page_url,
+    get_soup,
+)
 
 
 class TestGetSoup:
@@ -58,3 +62,36 @@ class TestGetNextPageUrl:
         res = get_next_page_url(soup)
 
         assert res is None
+
+
+class TestGetCollectionInfo:
+    @pytest.mark.parametrize("test_file", ["test_get_collection_info.html"])
+    def test_get_collection_info_gets_collection_info(
+        self, access_local_file_with_requests, get_path_to_test_file
+    ):
+        link = get_path_to_test_file
+        new_fn_get_link_response = partial(
+            get_link_response, get_request=access_local_file_with_requests
+        )
+        soup = get_soup(link, new_fn_get_link_response)
+
+        # get_collection_info is a generator function so we cast its results
+        # to a list to easily test the returned values
+        results = list(get_collection_info(soup))
+
+        assert len(results) == 3
+
+        assert results[0].details_link == "details.php?base=GEN01&id=1"
+        assert results[0].title == "Title 1"
+        assert results[0].author == "Author 1"
+        assert results[0].pdf_link == "pdfs/doc1.pdf"
+
+        assert results[1].details_link == "details.php?base=GEN01&id=2"
+        assert results[1].title == "Title 2"
+        assert results[1].author == ""
+        assert results[1].pdf_link == "pdfs/doc2.pdf"
+
+        assert results[2].details_link == "details.php?base=GEN01&id=3"
+        assert results[2].title == "Title 3"
+        assert results[2].author == "Author 3"
+        assert results[2].pdf_link == "pdfs/doc3.pdf"
