@@ -115,18 +115,19 @@ def get_collection_year(
     Retrieves the publication year of a collection from a specified URL.
 
     This function fetches the HTML content from a given URL and extracts the
-    publication year. If the year is found, it returns it as a string; otherwise
-    , it returns None. A custom function can be provided to handle the HTTP
-    request, defaulting to 'get_link_response'.
+    publication year. If the year is found, it returns it as a string; if it's
+    not found or an HTTP exception occurs it returns None. A custom function can
+    be provided to handle the HTTP request, defaulting to 'get_link_response'.
 
     Args:
         link (str): The URL of the page from which to retrieve the year.
         fn_get_response (Callable): A function to fetch the HTTP response for
         the URL, which should accept the URL and an optional callable for
-        making the request. Defaults to `get_link_response`.
+        making the request. Defaults to 'get_link_response'.
 
     Returns:
-        str | None: The publication year as a string if found, otherwise None.
+        str | None: The publication year as a string if found, or None if it was
+        not found or an HTTP exception occurred.
     """
     response = fn_get_response(link)
     if not isinstance(response, requests.Response):
