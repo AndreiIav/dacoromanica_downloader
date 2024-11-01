@@ -105,9 +105,34 @@ def get_collection_info(
             )
 
 
-def get_collection_year(link: str) -> str | None:
-    r = requests.get(link)
-    soup = BeautifulSoup(r.content.decode("utf-8"), "html5lib")
+def get_collection_year(
+    link: str,
+    fn_get_response: Callable[
+        [str, Optional[Callable]], requests.Response | str
+    ] = get_link_response,
+) -> str | None:
+    """
+    Retrieves the publication year of a collection from a specified URL.
+
+    This function fetches the HTML content from a given URL and extracts the
+    publication year. If the year is found, it returns it as a string; otherwise
+    , it returns None. A custom function can be provided to handle the HTTP
+    request, defaulting to 'get_link_response'.
+
+    Args:
+        link (str): The URL of the page from which to retrieve the year.
+        fn_get_response (Callable): A function to fetch the HTTP response for
+        the URL, which should accept the URL and an optional callable for
+        making the request. Defaults to `get_link_response`.
+
+    Returns:
+        str | None: The publication year as a string if found, otherwise None.
+    """
+    response = fn_get_response(link)
+    if not isinstance(response, requests.Response):
+        return None
+
+    soup = BeautifulSoup(response.content.decode("utf-8"), "html5lib")
     alltd = soup.find_all("td")
     for td in alltd:
         if td.string == "Data apariţiei":

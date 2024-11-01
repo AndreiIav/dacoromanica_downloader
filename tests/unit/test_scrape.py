@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from dacoromanica_downloader.download_pdf import get_link_response
 from dacoromanica_downloader.scrape import (
     get_collection_info,
+    get_collection_year,
     get_next_page_url,
     get_soup,
 )
@@ -95,3 +96,18 @@ class TestGetCollectionInfo:
         assert results[2].title == "Title 3"
         assert results[2].author == "Author 3"
         assert results[2].pdf_link == "pdfs/doc3.pdf"
+
+
+class TestGetCollectionYear:
+    @pytest.mark.parametrize("test_file", ["test_get_collection_year.html"])
+    def test_get_collection_year_gets_year(
+        self, get_path_to_test_file, access_local_file_with_requests
+    ):
+        link = get_path_to_test_file
+        new_fn_get_link_response = partial(
+            get_link_response, get_request=access_local_file_with_requests
+        )
+
+        res = get_collection_year(link, new_fn_get_link_response)
+
+        assert res == "2023"
