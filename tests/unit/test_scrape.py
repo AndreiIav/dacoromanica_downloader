@@ -27,7 +27,7 @@ class TestGetSoup:
 
         assert isinstance(get_soup_value, BeautifulSoup)
 
-    def test_get_soup_returns_error_message_when_error_occures(self):
+    def test_get_soup_returns_error_message_when_error_occurs(self):
         link = "link"
 
         get_soup_value = get_soup(link)
