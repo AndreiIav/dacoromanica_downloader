@@ -25,15 +25,29 @@ class CollectionPdf:
         return f"title: {self.title}, author: {self.author}, year: {self.year}"
 
     def __gt__(self, other: CollectionPdf) -> bool:
-        if self.year is None:
-            return False
-        if other.year is None:
-            return True
         return self.year > other.year
 
     def update_collection_year(
         self, fn_get_collection_year: Callable[[str], str | None]
     ) -> None:
+        """
+        Updates the collection's year attribute using a specified function to
+        retrieve the year.
+
+        This method retrieves the publication year of the collection from the
+        provided link using a custom function. If a year is successfully
+        retrieved, it formats the year and updates the 'year' attribute of the
+        instance.
+
+        Args:
+            fn_get_collection_year (Callable[[str], str | None]): A function
+            that accepts a URL (as a  string) and returns the collection's
+            publication year as a string, or None if not found.
+
+        Returns:
+            None: This method does not return a value; it updates the 'year'
+            attribute directly.
+        """
         link = self.details_link
         year = fn_get_collection_year(link)
         if year:
@@ -41,6 +55,14 @@ class CollectionPdf:
 
     @property
     def downloaded_file_name(self) -> str:
+        """
+        Gets the name used for the downloaded collection pdf file.
+
+        This method sanitazes the collection's title and year by removing
+        characters not allowed in Windows file names. The file name is then
+        constructed according to what collection details exist: author, title
+        and year.
+        """
         title = self._remove_forbidden_charactes(name=self.title)
         author = self._remove_forbidden_charactes(name=self.author)
 
@@ -55,9 +77,20 @@ class CollectionPdf:
 
     def _remove_forbidden_charactes(self, name: str) -> str:
         """
-        Remove characters that cannot be a part of file names on Linux
-        or Windows: <>:'""/'\\|/?*
-        It uses Unicode code points of the forbidden charactes.
+        Removes characters from a string that are not allowed in file names on
+        Windows.
+
+        This method filters out characters that are forbidden in file names due
+        to operating system restrictions. The forbidden characters are: '<',
+        '>', ':', ''', '"', '/', '\\', '|', '?', '*'.
+        The method uses Unicode code points to identify and remove these
+        characters.
+
+        Args:
+            name (str): The string representing the file name to be sanitized.
+
+        Returns:
+            str: The sanitized file name with forbidden characters removed.
         """
         res = ""
         for character in name:
@@ -67,6 +100,19 @@ class CollectionPdf:
         return res
 
     def _format_year(self, year_to_format: str) -> int:
+        """
+        Formats a year string by extracting and converting digits to an integer.
+
+        This method processes a string to extract only numeric characters. It
+        then attempts to convert the digits into an integer. If the conversion
+        fails, it returns 0.
+
+        Args:
+            year_to_format (str): A string containing the year information.
+
+        Returns:
+            int: The formatted year if successful, otherwise 0.
+        """
         year = ""
         for character in year_to_format:
             if character.isdigit():
