@@ -12,23 +12,24 @@ def get_soup(
     fn_get_response: Callable[
         [str, Optional[Callable]], requests.Response | str
     ] = get_link_response,
-) -> BeautifulSoup:
+) -> BeautifulSoup | str:
     """
-    Fetches the HTML content of a webpage at the specified URL and returns it as
-    a BeautifulSoup object.
+    Creates a BeautifulSoup object from a URL using a custom response handler.
 
     This function uses a custom function to retrieve the response for the given
-    URL. If no custom function is provided, it defaults to `get_link_response`.
+    URL. If no custom function is provided, it defaults to 'get_link_response'.
 
     Args:
         url (str): The URL of the webpage to retrieve.
         fn_get_response (Callable): A function used to fetch the HTTP response
-        for the URL, returning a 'requests.Response' or an error message if a an
-        exception was raised during the call. Defaults to 'get_link_response'.
+        for the URL, returning a 'requests.Response' object or an error message
+        if a an exception was raised during the call.
+        Defaults to 'get_link_response'.
 
     Returns:
-        BeautifulSoup: A BeautifulSoup object representing the parsed HTML of
-        the webpage.
+        BeautifulSoup | str: A BeautifulSoup object representing the parsed
+        HTML of the webpage or a string containing the error message if fetching
+        the URL fails.
     """
     response = fn_get_response(url)
     if not isinstance(response, requests.Response):
