@@ -7,33 +7,21 @@ from bs4 import BeautifulSoup
 from dacoromanica_downloader.download_pdf import get_link_response
 
 
-def get_soup(
-    url: str,
-    fn_get_response: Callable[
-        [str, Optional[Callable]], requests.Response | str
-    ] = get_link_response,
-) -> BeautifulSoup | str:
+def get_soup(response: requests.Response) -> BeautifulSoup:
     """
-    Creates a BeautifulSoup object from a URL using a custom response handler.
+    Parses the content of an HTTP response into a BeautifulSoup object.
 
-    This function uses a custom function to retrieve the response for the given
-    URL. If no custom function is provided, it defaults to 'get_link_response'.
+    This function takes an HTTP response object and parses its content as HTML
+    using BeautifulSoup.
 
     Args:
-        url (str): The URL of the webpage to retrieve.
-        fn_get_response (Callable): A function used to fetch the HTTP response
-        for the URL, returning a 'requests.Response' object or an error message
-        if a an exception was raised during the call.
-        Defaults to 'get_link_response'.
+        response (requests.Response): The HTTP response object containing the
+        content to be parsed.
 
     Returns:
-        BeautifulSoup | str: A BeautifulSoup object representing the parsed
-        HTML of the webpage or a string containing the error message if fetching
-        the URL fails.
+        BeautifulSoup : A BeautifulSoup object representing the parsed HTML
+        content.
     """
-    response = fn_get_response(url)
-    if not isinstance(response, requests.Response):
-        return response
 
     soup = BeautifulSoup(response.content.decode("utf-8"), "html5lib")
 

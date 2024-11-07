@@ -19,21 +19,23 @@ class TestGetSoup:
         self, access_local_file_with_requests, get_path_to_test_file
     ):
         link = get_path_to_test_file
-        new_fn_get_link_response = partial(
-            get_link_response, get_request=access_local_file_with_requests
-        )
+        response = get_link_response(link, access_local_file_with_requests)
 
-        get_soup_value = get_soup(link, new_fn_get_link_response)
+        soup = get_soup(response)
 
-        assert isinstance(get_soup_value, BeautifulSoup)
+        assert isinstance(soup, BeautifulSoup)
 
-    def test_get_soup_returns_error_message_when_error_occurs(self):
-        link = "link"
+    @pytest.mark.parametrize("test_file", ["test_page.html"])
+    def test_get_soup_contains_correct_data(
+        self, access_local_file_with_requests, get_path_to_test_file
+    ):
+        link = get_path_to_test_file
+        response = get_link_response(link, access_local_file_with_requests)
 
-        get_soup_value = get_soup(link)
+        soup = get_soup(response)
 
-        assert isinstance(get_soup_value, str)
-        assert "RequestException" in get_soup_value
+        assert soup.find("h1").string == "vânătoare bărbați pietriș"
+        assert soup.find("p").string == "VÂNĂTOARE BĂRBAȚI PIETRIȘ"
 
 
 class TestGetNextPageUrl:
@@ -46,8 +48,11 @@ class TestGetNextPageUrl:
             get_link_response, get_request=access_local_file_with_requests
         )
         soup = get_soup(link, new_fn_get_link_response)
+        next_page_link_identifier = "func=results-next-page&result_format=001"
 
-        res = get_next_page_url(soup)
+        res = get_next_page_url(
+            soup, next_page_link_identifier=next_page_link_identifier
+        )
 
         assert res == "nextPageLinkfunc=results-next-page&result_format=001"
 
@@ -60,8 +65,9 @@ class TestGetNextPageUrl:
             get_link_response, get_request=access_local_file_with_requests
         )
         soup = get_soup(link, new_fn_get_link_response)
+        next_page_link_identifier = "func=results-next-page&result_format=001"
 
-        res = get_next_page_url(soup)
+        res = get_next_page_url(soup, next_page_link_identifier)
 
         assert res is None
 
@@ -79,7 +85,9 @@ class TestGetCollectionInfo:
 
         # get_collection_info is a generator function so we cast its results
         # to a list to easily test the returned values
-        results = list(get_collection_info(soup))
+        results = list(
+            get_collection_info(soup, collections_base_link_identifier="base=GEN01")
+        )
 
         assert len(results) == 3
 
