@@ -1,5 +1,3 @@
-from functools import partial
-
 import pytest
 from bs4 import BeautifulSoup
 
@@ -44,10 +42,8 @@ class TestGetNextPageUrl:
         self, access_local_file_with_requests, get_path_to_test_file
     ):
         link = get_path_to_test_file
-        new_fn_get_link_response = partial(
-            get_link_response, get_request=access_local_file_with_requests
-        )
-        soup = get_soup(link, new_fn_get_link_response)
+        response = get_link_response(link, access_local_file_with_requests)
+        soup = get_soup(response)
         next_page_link_identifier = "func=results-next-page&result_format=001"
 
         res = get_next_page_url(
@@ -61,10 +57,8 @@ class TestGetNextPageUrl:
         self, access_local_file_with_requests, get_path_to_test_file
     ):
         link = get_path_to_test_file
-        new_fn_get_link_response = partial(
-            get_link_response, get_request=access_local_file_with_requests
-        )
-        soup = get_soup(link, new_fn_get_link_response)
+        response = get_link_response(link, access_local_file_with_requests)
+        soup = get_soup(response)
         next_page_link_identifier = "func=results-next-page&result_format=001"
 
         res = get_next_page_url(soup, next_page_link_identifier)
@@ -78,10 +72,8 @@ class TestGetCollectionInfo:
         self, access_local_file_with_requests, get_path_to_test_file
     ):
         link = get_path_to_test_file
-        new_fn_get_link_response = partial(
-            get_link_response, get_request=access_local_file_with_requests
-        )
-        soup = get_soup(link, new_fn_get_link_response)
+        response = get_link_response(link, access_local_file_with_requests)
+        soup = get_soup(response)
 
         # get_collection_info is a generator function so we cast its results
         # to a list to easily test the returned values
