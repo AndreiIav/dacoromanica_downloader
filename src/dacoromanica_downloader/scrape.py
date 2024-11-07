@@ -99,35 +99,22 @@ def get_collection_info(soup: BeautifulSoup, collections_base_link_identifier: s
             )
 
 
-def get_collection_year(
-    link: str,
-    fn_get_response: Callable[
-        [str, Optional[Callable]], requests.Response | str
-    ] = get_link_response,
-) -> str | None:
+def get_collection_year(soup: BeautifulSoup) -> str | None:
     """
-    Retrieves the publication year of a collection from a specified URL.
+    Extracts the publication year of a collection from a BeautifulSoup object.
 
-    This function fetches the HTML content from a given URL and extracts the
-    publication year. If the year is found, it returns it as a string; if it's
-    not found or an HTTP exception occurs it returns None. A custom function can
-    be provided to handle the HTTP request, defaulting to 'get_link_response'.
+    This function searches the parsed HTML content (BeautifulSoup object) for a
+    publication year. If the year is found, it is returned as a string. If no
+    year is found, the function returns None.
 
     Args:
-        link (str): The URL of the page from which to retrieve the year.
-        fn_get_response (Callable): A function to fetch the HTTP response for
-        the URL, which should accept the URL and an optional callable for
-        making the request. Defaults to 'get_link_response'.
+        soup (BeautifulSoup): The BeautifulSoup object containing the parsed
+        HTML content of the collection page.
 
     Returns:
-        str | None: The publication year as a string if found, or None if it was
-        not found or an HTTP exception occurred.
+        str | None: The publication year as a string if found, otherwise None.
     """
-    response = fn_get_response(link)
-    if not isinstance(response, requests.Response):
-        return None
 
-    soup = BeautifulSoup(response.content.decode("utf-8"), "html5lib")
     alltd = soup.find_all("td")
     for td in alltd:
         if td.string == "Data apariţiei":
