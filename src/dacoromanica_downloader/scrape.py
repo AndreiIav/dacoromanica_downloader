@@ -69,8 +69,8 @@ def get_collection_info(soup: BeautifulSoup, collections_base_link_identifier: s
     Args:
         soup (BeautifulSoup): The BeautifulSoup object containing the parsed
         HTML content.
-        collections_base_link_identifier (str): The name used to identify the HTML unit that
-        contains a collection.
+        collections_base_link_identifier (str): The name used to identify the
+        HTML unit that contains a collection.
 
     Yields:
         CollectionInfo (namedtuple): A named tuple with the following
