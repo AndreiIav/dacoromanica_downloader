@@ -40,7 +40,10 @@ def get_soup(
     return soup
 
 
-def get_next_page_url(soup: BeautifulSoup) -> str | None:
+def get_next_page_url(
+    soup: BeautifulSoup,
+    next_page_link_identifier: str,
+) -> str | None:
     """
     Extracts URL from a BeautifulSoup object, if available.
 
@@ -51,13 +54,15 @@ def get_next_page_url(soup: BeautifulSoup) -> str | None:
     Args:
         soup (BeautifulSoup): The BeautifulSoup object containing the parsed
         HTML content.
+        next_page_link_identifier (str): The name used to identify the searched
+        link.
 
     Returns:
         str | None: The URL of the next page as a string if found, otherwise
         None.
     """
     for link in soup.find_all("a"):
-        if "func=results-next-page&result_format=001" in str(link.get("href")):
+        if next_page_link_identifier in str(link.get("href")):
             # two "next_page" links exists on the page; we need only one
             # so return as soon as one is found
             next_page_url = str(link.get("href"))
@@ -67,9 +72,7 @@ def get_next_page_url(soup: BeautifulSoup) -> str | None:
     return None
 
 
-def get_collection_info(
-    soup: BeautifulSoup,
-):
+def get_collection_info(soup: BeautifulSoup, collections_base_link_identifier: str):
     """
     Yields information about each item in a collection from parsed HTML content.
 
@@ -81,6 +84,8 @@ def get_collection_info(
     Args:
         soup (BeautifulSoup): The BeautifulSoup object containing the parsed
         HTML content.
+        collections_base_link_identifier (str): The name used to identify the HTML unit that
+        contains a collection.
 
     Yields:
         CollectionInfo (namedtuple): A named tuple with the following
@@ -90,7 +95,7 @@ def get_collection_info(
         "CollectionInfo", ["details_link", "title", "author", "pdf_link"]
     )
     for link in soup.find_all("a"):
-        if "base=GEN01" in str(link.get("href")):
+        if collections_base_link_identifier in str(link.get("href")):
             details_link = link.get("href")
             parent = link.parent.parent
             alltd = parent.find_all("td")
