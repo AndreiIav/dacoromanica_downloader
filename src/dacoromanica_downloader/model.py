@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Callable
-
 
 class CollectionPdf:
     def __init__(
@@ -28,30 +26,23 @@ class CollectionPdf:
         return self.year > other.year
 
     def update_collection_year(
-        self, fn_get_collection_year: Callable[[str], str | None]
+        self,
+        year: str,
     ) -> None:
         """
-        Updates the collection's year attribute using a specified function to
-        retrieve the year.
+        Updates the collection's year attribute with a formatted year.
 
-        This method retrieves the publication year of the collection from the
-        provided link using a custom function. If a year is successfully
-        retrieved, it formats the year and updates the 'year' attribute of the
-        instance.
+        This method takes a year as a string, tries to format it into an integer
+        using the '_format_year' method, and, if successful, updates the 'year'
+        attribute of the instance.
 
         Args:
-            fn_get_collection_year (Callable[[str], str | None]): A function
-            that accepts a URL (as a  string) and returns the collection's
-            publication year as a string, or None if not found.
+            year (str): The year to be formatted.
 
         Returns:
-            None: This method does not return a value; it updates the 'year'
-            attribute directly.
+            None: This method does not return a value.
         """
-        link = self.details_link
-        year = fn_get_collection_year(link)
-        if year:
-            self.year = self._format_year(year_to_format=year)
+        self.year = self._format_year(year_to_format=year)
 
     @property
     def downloaded_file_name(self) -> str:

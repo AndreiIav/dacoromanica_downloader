@@ -81,7 +81,7 @@ class TestCollectionPdfUpdateCollectionYear:
             author="author",
         )
 
-        test_collection.update_collection_year(fn_get_collection_year=lambda _: input)
+        test_collection.update_collection_year(year=input)
 
         assert test_collection.year == expected_result
 
@@ -99,23 +99,9 @@ class TestCollectionPdfUpdateCollectionYear:
             author="author",
         )
 
-        test_collection.update_collection_year(fn_get_collection_year=lambda _: input)
+        test_collection.update_collection_year(year=input)
 
         assert test_collection.year == expected_result
-
-    def test_update_collection_year_does_not_update_year_when_year_is_not_provided(
-        self,
-    ):
-        test_collection = CollectionPdf(
-            details_link="details_link",
-            title="title",
-            pdf_link="pdf_link",
-            author="author",
-        )
-
-        test_collection.update_collection_year(fn_get_collection_year=lambda _: None)
-
-        assert test_collection.year == 0
 
     @pytest.mark.parametrize("input", ["", "year"])
     def test_update_collection_year_does_not_update_year_when_invalid_year_is_provided(
@@ -128,7 +114,7 @@ class TestCollectionPdfUpdateCollectionYear:
             author="author",
         )
 
-        test_collection.update_collection_year(fn_get_collection_year=lambda _: input)
+        test_collection.update_collection_year(year=input)
 
         assert test_collection.year == 0
 
