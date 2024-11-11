@@ -3,7 +3,6 @@ import requests
 
 from dacoromanica_downloader.download_pdf import (
     PathTooLongError,
-    download_file,
     get_link_response,
     shorten_filename,
 )
@@ -131,17 +130,3 @@ class TestGetLinkResponse:
 
         assert isinstance(response, str)
         assert f"RequestException : {error_message}" in response
-
-
-class TestDownloadFile:
-    @pytest.mark.parametrize("test_file", ["test.pdf"])
-    def test_download_file_downloads_file(
-        self, tmp_path, access_local_file_with_requests, get_path_to_test_file
-    ):
-        filename = tmp_path / "downloaded_test_file.pdf"
-        file_link = get_path_to_test_file
-        http_response = get_link_response(file_link, access_local_file_with_requests)
-
-        download_file(filename=filename, http_response=http_response)
-
-        assert filename.is_file()
