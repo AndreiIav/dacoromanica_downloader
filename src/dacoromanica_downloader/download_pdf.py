@@ -101,52 +101,28 @@ def shorten_filename(filename: Path, path_length_limit: int = 250) -> Path:
     return formated_filename
 
 
-def download_file(filename: Path, http_response: requests.Response) -> None:
-    """
-    Saves the content from an HTTP response to a file using the pathlib and
-    requests libraries.
-
-    This function writes the data from the provided HTTP response to the
-    specified file path. The file is created at the given path, and the content
-    from the response is written to it.
-
-    Args:
-        filename (Path): The file path where the content will be saved.
-        http_response (requests.Response): The HTTP response object containing
-        the file content.
-
-    Returns:
-        None: This function does not return any value.
-    """
-    filename.write_bytes(http_response.content)
-
-
 def download_collection_pdf(
-    pdf_link: str,
+    response: requests.Response,
     pdf_name: str,
     destination_folder: str,
-    fn_get_response: Callable[[str], requests.Response | str] = get_link_response,
     path_length_limit: int = 250,
 ) -> None:
     """
-    Downloads a PDF from a specified URL, applies optional filename shortening,
+    Downloads a PDF from an HTTP response, applies optional filename shortening,
     and saves it to a destination folder.
 
-    This function orchestrates the download of a PDF file from a given link by
-    calling a series of helper functions. It retrieves the HTTP response for the
-    PDF link, then shortens the filename if needed, checks if the file already
-    exists and finally saves the PDF content to the specified destination folder.
+    This function saves the content of an HTTP response representing a PDF file
+    to the specified destination folder, ensuring that the resulting file path
+    does not exceed a specified length limit. If the file path length exceeds
+    the limit, the filename is shortened.
 
     Args:
-        pdf_link (str): The URL of the PDF file to download.
+        response (requests.Response): The http reponse object containing the PDF
+        file.
         pdf_name (str): The desired name for the saved PDF file, including the
         '.pdf' extension.
         destination_folder (str): The path to the folder where the PDF file will
         be saved.
-        fn_get_link_response (Callable[[str], requests.Response | str]): A
-        function to fetch the HTTP response from the PDF link, returning a
-        string with the exception message if an error occurs. Defaults to
-        'get_link_response'.
         path_length_limit (int): The accepted file path limit. Defaults to 250.
 
     Returns:
@@ -156,11 +132,6 @@ def download_collection_pdf(
         PathTooLongError: If the filename cannot be shortened to meet system
         path length limitations.
     """
-
-    http_response = fn_get_response(link=pdf_link)
-    if not isinstance(http_response, requests.Response):
-        print(f"'{pdf_name}' was not downloaded due to this error: {http_response} .")
-        return
 
     filename = (Path(destination_folder) / pdf_name).absolute()
 
@@ -186,5 +157,5 @@ def download_collection_pdf(
         )
         return
 
-    download_file(filename=filename, http_response=http_response)
+    filename.write_bytes(response.content)
     print(f"'{pdf_name}' downloaded in '{destination_folder}' folder.")
