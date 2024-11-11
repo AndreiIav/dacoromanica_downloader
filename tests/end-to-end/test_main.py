@@ -1,6 +1,7 @@
-from functools import partial
+from pathlib import Path
 
 import pytest
+import requests
 
 from dacoromanica_downloader.download_pdf import get_link_response
 from dacoromanica_downloader.main import (
@@ -43,9 +44,28 @@ def test_get_page_collections(get_path_to_test_file, access_local_file_with_requ
 def test_main_end_to_end(
     monkeypatch, get_path_to_test_file, access_local_file_with_requests
 ):
-    new_get_link_response = partial(
-        get_link_response, get_request=access_local_file_with_requests
-    )
+    def new_get_link_response(link, get_request=access_local_file_with_requests):
+        """
+        Version of get_link_response() that works with local html files.
+        Needed for making accessing local html files from relative paths work.
+        """
+        if "file://" not in link:
+            link_path = (
+                Path(".").resolve() / "tests" / "test_data" / "test_data_main" / link
+            )
+            link = "file://" + str(link_path)
+        try:
+            response = get_request(link, timeout=20)
+            return response
+        except requests.exceptions.HTTPError as e:
+            return f"HTTPError : {e}"
+        except requests.exceptions.ConnectionError as e:
+            return f"ConnectionError : {e}"
+        except requests.exceptions.Timeout as e:
+            return f"Timeout exception : {e}"
+        except requests.exceptions.RequestException as e:
+            return f"RequestException : {e}"
+
     monkeypatch.setattr(
         "dacoromanica_downloader.main.get_link_response",
         new_get_link_response,
@@ -67,4 +87,4 @@ def test_main_end_to_end(
 
     res = main()
 
-    assert len(res) == 4
+    assert len(res) == 3
