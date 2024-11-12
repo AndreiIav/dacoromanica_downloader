@@ -1,4 +1,5 @@
 from collections import namedtuple
+from typing import Iterator
 
 import requests
 from bs4 import BeautifulSoup
@@ -57,7 +58,9 @@ def get_next_page_url(
     return None
 
 
-def get_collection_info(soup: BeautifulSoup, collections_base_link_identifier: str):
+def get_collection_info(
+    soup: BeautifulSoup, collections_base_link_identifier: str
+) -> Iterator:
     """
     Yields information about each item in a collection from parsed HTML content.
 
