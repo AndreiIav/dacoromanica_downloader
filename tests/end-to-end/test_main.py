@@ -42,7 +42,11 @@ def test_get_page_collections(get_path_to_test_file, access_local_file_with_requ
 
 @pytest.mark.parametrize("test_file", ["test_data_main/collections_page1.html"])
 def test_main_end_to_end(
-    monkeypatch, get_path_to_test_file, access_local_file_with_requests
+    monkeypatch,
+    get_path_to_test_file,
+    access_local_file_with_requests,
+    tmp_path,
+    capsys,
 ):
     def new_get_link_response(link, get_request=access_local_file_with_requests):
         """
@@ -70,7 +74,6 @@ def test_main_end_to_end(
         "dacoromanica_downloader.main.get_link_response",
         new_get_link_response,
     )
-
     link = get_path_to_test_file
     monkeypatch.setattr(
         "dacoromanica_downloader.main.starting_urls",
@@ -84,7 +87,39 @@ def test_main_end_to_end(
         "dacoromanica_downloader.main.collections_base_link_identifier",
         "collection_details",
     )
+    destination_location = str(tmp_path)
+    monkeypatch.setattr(
+        "dacoromanica_downloader.main.destination_folder", destination_location
+    )
+    files_to_be_downloaded_location = (
+        Path(".").resolve() / "tests" / "test_data" / "test_data_main"
+    )
+    files_to_be_downloaded = [
+        "collection1.pdf",
+        "collection2.pdf",
+        "collection3.pdf",
+        "collection4.pdf",
+    ]
+    expected_downloaded_files = [
+        "Author 1_Title 1_1900.pdf",
+        "Author 2_Title 2_1903.pdf",
+        "Author 3_Title 3.pdf",
+        "Title 4_1850.pdf",
+    ]
 
-    res = main()
+    main()
 
-    assert len(res) == 3
+    out, _ = capsys.readouterr()
+    for file in zip(files_to_be_downloaded, expected_downloaded_files):
+        file_to_be_downloaded = files_to_be_downloaded_location / file[0]
+        downloaded_file = Path(destination_location) / file[1]
+        downloaded_file_name = file[1]
+
+        assert (
+            f"'{downloaded_file_name}' downloaded in '{destination_location}' folder."
+            in out
+        )
+        assert downloaded_file.is_file()
+        assert Path.read_bytes(file_to_be_downloaded) == Path.read_bytes(
+            downloaded_file
+        )
