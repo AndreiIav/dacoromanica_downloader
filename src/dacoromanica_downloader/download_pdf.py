@@ -104,7 +104,7 @@ def shorten_filename(filename: Path, path_length_limit: int = 250) -> Path:
 def download_collection_pdf(
     response: requests.Response,
     pdf_name: str,
-    destination_folder: str,
+    destination_folder: Path,
     path_length_limit: int = 250,
 ) -> None:
     """
@@ -121,7 +121,7 @@ def download_collection_pdf(
         file.
         pdf_name (str): The desired name for the saved PDF file, including the
         '.pdf' extension.
-        destination_folder (str): The path to the folder where the PDF file will
+        destination_folder (Path): The path to the folder where the PDF file will
         be saved.
         path_length_limit (int): The accepted file path limit. Defaults to 250.
 
@@ -133,7 +133,7 @@ def download_collection_pdf(
         path length limitations.
     """
 
-    filename = (Path(destination_folder) / pdf_name).absolute()
+    filename = (destination_folder / pdf_name).resolve()
 
     # check if the length of the path is greater than 250 characters and try to
     # shorten it if it is (the maximum path length on Windows is 256 but we
