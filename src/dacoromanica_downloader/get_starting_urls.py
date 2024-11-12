@@ -9,10 +9,21 @@ class EmptyFileError(Exception):
         self.name = name
 
 
-def get_starting_urls(urls_file_path: str) -> list[str]:
-    file_path = Path(urls_file_path)
+def get_starting_urls(urls_file_path: Path) -> list[str]:
+    """
+    Gets urls stored in a file text.
 
-    if not file_path.exists():
+    Args:
+        urls_file_path (Path): Path to the file text conatining the urls.
+
+    Returns:
+        list[str]: List of urls.
+
+    Raises:
+        FileNotFoundError: If no file is found at the path.
+        EmptyFileError: If the file contains no data.
+    """
+    if not urls_file_path.is_file():
         raise FileNotFoundError(f"{urls_file_path} file does not exists.")
 
     with open(urls_file_path, encoding="utf_8") as f:
