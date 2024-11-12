@@ -24,12 +24,12 @@ def get_starting_urls(urls_file_path: Path) -> list[str]:
         EmptyFileError: If the file contains no data.
     """
     if not urls_file_path.is_file():
-        raise FileNotFoundError(f"{urls_file_path} file does not exists.")
+        raise FileNotFoundError(f"{str(urls_file_path)} file does not exists.")
 
     with open(urls_file_path, encoding="utf_8") as f:
         urls = f.read()
 
     if not urls:
-        raise EmptyFileError(urls_file_path)
+        raise EmptyFileError(str(urls_file_path))
 
     return urls.split()
