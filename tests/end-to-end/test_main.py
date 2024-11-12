@@ -87,7 +87,7 @@ def test_main_end_to_end(
         "dacoromanica_downloader.main.collections_base_link_identifier",
         "collection_details",
     )
-    destination_location = str(tmp_path)
+    destination_location = tmp_path
     monkeypatch.setattr(
         "dacoromanica_downloader.main.destination_folder", destination_location
     )
