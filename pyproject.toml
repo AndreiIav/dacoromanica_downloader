@@ -7,10 +7,11 @@ requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
+    "License :: MIT License"
 ]
 
 [project.urls]
-Homepage = "https://github.com/AndreiIav/dacoromanica_downloader"
+Repository = "https://github.com/AndreiIav/dacoromanica_downloader"
 
 [build-system]
 requires = ["hatchling"]
