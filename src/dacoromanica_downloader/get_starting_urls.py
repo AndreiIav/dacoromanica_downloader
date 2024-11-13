@@ -5,7 +5,7 @@ class EmptyFileError(Exception):
     """Raised when a file contains no data."""
 
     def __init__(self, name: str):
-        super().__init__(f"'{name}' file contains no data.")
+        super().__init__(f"'{name}' file contains no data. Please add data to file.")
         self.name = name
 
 
@@ -24,7 +24,11 @@ def get_starting_urls(urls_file_path: Path) -> list[str]:
         EmptyFileError: If the file contains no data.
     """
     if not urls_file_path.is_file():
-        raise FileNotFoundError(f"{str(urls_file_path)} file does not exists.")
+        raise FileNotFoundError(
+            f"'{str(urls_file_path)}' file does not exist."
+            f" Please add a '{str(urls_file_path)}' in the"
+            " 'dacoromanica_downloader' folder."
+        )
 
     with open(urls_file_path, encoding="utf_8") as f:
         urls = f.read()

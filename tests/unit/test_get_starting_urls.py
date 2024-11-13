@@ -19,7 +19,11 @@ def test_get_starting_urls_raises_FileNotFoundError(tmp_path):
     with pytest.raises(FileNotFoundError) as err:
         get_starting_urls(tmp_path)
 
-    assert str(err.value) == f"{tmp_path} file does not exists."
+    assert str(err.value) == (
+        f"'{str(tmp_path)}' file does not exist."
+        f" Please add a '{str(tmp_path)}' in the"
+        " 'dacoromanica_downloader' folder."
+    )
 
 
 def test_get_starting_urls_raises_EmptyFileError(tmp_path):
@@ -29,4 +33,7 @@ def test_get_starting_urls_raises_EmptyFileError(tmp_path):
     with pytest.raises(EmptyFileError) as err:
         get_starting_urls(file_location)
 
-    assert str(err.value) == f"'{file_location}' file contains no data."
+    assert (
+        str(err.value)
+        == f"'{file_location}' file contains no data. Please add data to file."
+    )
