@@ -3,11 +3,11 @@ name = "dacoromanica_downloader"
 version = "0.0.1"
 description = "A package that automates downloding files from Dacoromanica"
 readme = "README.md"
+license = {file = "LICENSE"}
 requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
-    "License :: MIT License"
 ]
 
 [project.urls]
