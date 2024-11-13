@@ -174,4 +174,5 @@ poetry.toml
 pyrightconfig.json
 
 # project specific files
+starting_urls.txt
 downloaded_files/*.pdf
