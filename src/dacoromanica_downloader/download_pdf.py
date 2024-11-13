@@ -81,18 +81,16 @@ def shorten_filename(filename: Path, path_length_limit: int = 250) -> Path:
     # Determine by how many characters should the filename be shortened
     shortening_length = len(str(filename)) - LIMIT
 
-    # Use Path operations to split the filename in the actual name (filename_name)
-    # and the location on the filesystem (filename_parent)
+    # Use Path operations to split the filename in the actual name (filename_name),
+    # the location on the filesystem (filename_parent) and the extension (filename_extension)
     filename_path = Path(filename)
-    filename_name = filename_path.name
+    filename_name = filename_path.stem
     filename_parent = filename_path.parent
+    filename_extension = filename_path.suffix
 
-    # remove extension (".pdf") from filename_name
-    filename_name_without_extension = filename_name[:-4]
-
-    if len(filename_name_without_extension) > shortening_length:
-        i = len(filename_name_without_extension) - shortening_length
-        new_filename_name = filename_name_without_extension[:i] + ".pdf"
+    if len(filename_name) > shortening_length:
+        i = len(filename_name) - shortening_length
+        new_filename_name = filename_name[:i] + filename_extension
     else:
         raise PathTooLongError(str(filename))
 
