@@ -14,7 +14,7 @@ def get_starting_urls(urls_file_path: Path) -> list[str]:
     Gets urls stored in a file text.
 
     Args:
-        urls_file_path (Path): Path to the file text conatining the urls.
+        urls_file_path (Path): Path to the file text containing the urls.
 
     Returns:
         list[str]: List of urls.
