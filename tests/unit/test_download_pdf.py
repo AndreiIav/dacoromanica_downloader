@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 import requests
 
@@ -12,33 +14,43 @@ class TestShortenFilename:
     def test_shorten_filename_shortens_filename_that_is_over_limit(self):
         limit = 250
         extension = ".pdf"  # 4 characters
-        path = ("h" * 5) + "/"  # 6 characters
+        # 5 characters + 1 for the slash that will be added when the path will be resolved
+        path = "h" * 5
         file_name_within_limit = "a" * 240
         file_name_over_limit = "b" * 5
-        filename = f"{path}{file_name_within_limit}{file_name_over_limit}{extension}"
+        filename = (
+            Path(path) / f"{file_name_within_limit}{file_name_over_limit}{extension}"
+        )
 
         formated_filename = shorten_filename(filename)
 
         assert len(str(formated_filename)) == limit
-        assert str(formated_filename) == f"{path}{file_name_within_limit}{extension}"
+        assert str(formated_filename) == str(
+            Path(path) / f"{file_name_within_limit}{extension}"
+        )
 
     def test_shorten_filename_does_not_shorten_name_that_is_not_over_limit(self):
         limit = 250
         extension = ".pdf"  # 4 characters
-        path = ("h" * 5) + "/"  # 6 characters
+        # 5 characters + 1 for the slash that will be added when the path will be resolved
+        path = "h" * 5
         file_name_within_limit = "a" * 240
-        filename = f"{path}{file_name_within_limit}{extension}"
+        filename = Path(path) / f"{file_name_within_limit}{extension}"
 
         formated_filename = shorten_filename(filename)
 
         assert len(str(formated_filename)) == limit
-        assert str(formated_filename) == f"{path}{file_name_within_limit}{extension}"
+        assert str(formated_filename) == str(
+            Path(path) / f"{file_name_within_limit}{extension}"
+        )
 
     def test_shorten_filename_raises_exception_if_filename_can_not_be_shortened(self):
         extension = ".pdf"  # 4 characters
-        path = ("h" * 249) + "/"  # 250 charactes
+        # 249 characters + 1 for the slash that will be added when the path will be resolved
+        path = "h" * 249
         file_name = "a" * 10
-        filename = f"{path}{file_name}{extension}"
+        # filename = f"{path}{file_name}{extension}"
+        filename = Path(path) / f"{path}{file_name}{extension}"
 
         with pytest.raises(PathTooLongError) as e:
             shorten_filename(filename)
