@@ -23,7 +23,7 @@ def test_end_to_end_main(
             link_path = (
                 Path(".").resolve() / "tests" / "test_data" / "test_data_main" / link
             )
-            link = "file://" + str(link_path)
+            link = "file:///" + str(link_path)
         try:
             response = get_request(link, timeout=20)
             return response
