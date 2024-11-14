@@ -2,7 +2,6 @@ beautifulsoup4==4.12.3
 certifi==2024.8.30
 charset-normalizer==3.3.2
 coverage==7.6.4
--e git+https://github.com/AndreiIav/dacoromanica_downloader.git@5fc316def935f62fb6befe579f29237ffd1f9802#egg=dacoromanica_downloader
 exceptiongroup==1.2.2
 html5lib==1.1
 idna==3.10
