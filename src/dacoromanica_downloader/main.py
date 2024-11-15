@@ -91,23 +91,27 @@ def main() -> None:
             print(
                 f"{starting_url} could not be accessed because of: "
                 f"{starting_url_response}. "
-                "No files can be downloaded from the link."
+                "No files can be downloaded from this link."
             )
             continue
         starting_url_soup = get_soup(response=starting_url_response)
         table_view_url = get_link_for_table_view(soup=starting_url_soup)
         if not table_view_url:
             print(
-                f"{starting_url} is not a valid Dacoromanica documents page. "
-                "No files can be downloaded from the link."
+                f"'{starting_url}' is not a valid Dacoromanica collections page. "
+                "No files can be downloaded from this link."
             )
             continue
 
         table_view_response = get_link_response(link=table_view_url)
-        if not isinstance(table_view_response, requests.Response):
+        if (
+            not isinstance(table_view_response, requests.Response)
+            or table_view_response.status_code != 200
+        ):
             print(
-                f"the table view cannot be accessed for: {starting_url}."
-                "No files can be downloaded from the link."
+                f"The table view cannot be accessed for: {starting_url} "
+                f"because of {table_view_response}. "
+                "No files can be downloaded from this link."
             )
             continue
         table_view_soup = get_soup(response=table_view_response)
@@ -123,10 +127,13 @@ def main() -> None:
         )
         for page in next_page:
             page_response = get_link_response(link=page)
-            if not isinstance(page_response, requests.Response):
+            if (
+                not isinstance(page_response, requests.Response)
+                or page_response.status_code != 200
+            ):
                 print(
-                    f"{page} could not be accessed because of: {page_response}."
-                    "No files can be downloaded from the link."
+                    f" '{page}' could not be accessed because of: {page_response}. "
+                    "No files can be downloaded from this link."
                 )
                 continue
             page_soup = get_soup(response=page_response)
@@ -139,7 +146,10 @@ def main() -> None:
 
     for collection in all_collections:
         year_response = get_link_response(link=collection.details_link)
-        if not isinstance(year_response, requests.Response):
+        if (
+            not isinstance(year_response, requests.Response)
+            or year_response.status_code != 200
+        ):
             continue
         year_soup = get_soup(response=year_response)
         year = get_collection_year(soup=year_soup)
@@ -151,10 +161,9 @@ def main() -> None:
 
     for collection in sorted_collections:
         response = get_link_response(link=collection.pdf_link)
-        if not isinstance(response, requests.Response):
+        if not isinstance(response, requests.Response) or response.status_code != 200:
             print(
-                f"'{collection.title}' was not downloaded due to this error: "
-                f"{response} ."
+                f"'{collection.title}' was not downloaded because of: " f"{response} ."
             )
             continue
         download_collection_pdf(
@@ -164,6 +173,8 @@ def main() -> None:
         )
         time.sleep(3)
 
+    print("dacoromanica_downloader finished.")
+
 
 if __name__ == "__main__":
-    main()
+    main()  # pragma: no cover
