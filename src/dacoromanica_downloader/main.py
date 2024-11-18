@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Iterator
 
 import requests
-from bs4 import BeautifulSoup
 
 from dacoromanica_downloader.download_pdf import (
     download_collection_pdf,
@@ -24,30 +23,6 @@ starting_urls: list[str] = get_starting_urls(urls_file_path=starting_urls_file_p
 next_page_link_identifier: str = "func=results-next-page&result_format=001"
 collections_base_link_identifier: str = "base=GEN01"
 destination_folder: Path = Path("downloaded_files")
-
-
-def generate_next_page_url(
-    soup: BeautifulSoup, next_page_link_identifier: str = next_page_link_identifier
-) -> Iterator[str]:
-    """
-    Generates a next_page url if it is found in the provided BeautifulSoup
-    object.
-
-    It uses get_next_page_url() to find the url in the BeautifulSoup object.
-
-    Args:
-        soup (BeautifulSoup): A BeautifulSoup object containing parsed HTML.
-        next_page_link_identifier (str): The name used to identify the searched
-        link.
-
-    Yields:
-        str: A string containig the next_page url.
-    """
-    next_page = get_next_page_url(
-        soup, next_page_link_identifier=next_page_link_identifier
-    )
-    if next_page:
-        yield next_page
 
 
 def create_CollectionPdf(
@@ -103,46 +78,31 @@ def main() -> None:
             )
             continue
 
-        table_view_response = get_link_response(link=table_view_url)
-        if (
-            not isinstance(table_view_response, requests.Response)
-            or table_view_response.status_code != 200
-        ):
-            print(
-                f"The table view cannot be accessed for: {starting_url} "
-                f"because of {table_view_response}. "
-                "No files can be downloaded from this link."
-            )
-            continue
-        table_view_soup = get_soup(response=table_view_response)
-        all_collections_on_page_details = get_collection_info(
-            soup=table_view_soup,
-            collections_base_link_identifier=collections_base_link_identifier,
-        )
-        all_page_collections = create_CollectionPdf(all_collections_on_page_details)
-        all_collections.extend(all_page_collections)
-
-        next_page = generate_next_page_url(
-            table_view_soup, next_page_link_identifier=next_page_link_identifier
-        )
-        for page in next_page:
-            page_response = get_link_response(link=page)
+        next_page_url = table_view_url
+        while next_page_url:
+            response = get_link_response(link=next_page_url)
             if (
-                not isinstance(page_response, requests.Response)
-                or page_response.status_code != 200
+                not isinstance(response, requests.Response)
+                or response.status_code != 200
             ):
-                print(
-                    f" '{page}' could not be accessed because of: {page_response}. "
-                    "No files can be downloaded from this link."
-                )
-                continue
-            page_soup = get_soup(response=page_response)
+                f"'{next_page_url}' could not be accessed because of: {response}. "
+                "No files can be downloaded from this link."
+                break
+            page_soup = get_soup(response=response)
             all_collections_on_page_details = get_collection_info(
                 soup=page_soup,
                 collections_base_link_identifier=collections_base_link_identifier,
             )
             all_page_collections = create_CollectionPdf(all_collections_on_page_details)
             all_collections.extend(all_page_collections)
+            next_page_url = get_next_page_url(
+                soup=page_soup, next_page_link_identifier=next_page_link_identifier
+            )
+            if next_page_url is None:
+                break
+            time.sleep(1)
+
+    print(f"all_collections length is {len(all_collections)}")
 
     for collection in all_collections:
         year_response = get_link_response(link=collection.details_link)
@@ -162,16 +122,14 @@ def main() -> None:
     for collection in sorted_collections:
         response = get_link_response(link=collection.pdf_link)
         if not isinstance(response, requests.Response) or response.status_code != 200:
-            print(
-                f"'{collection.title}' was not downloaded because of: " f"{response} ."
-            )
+            print(f"'{collection.title}' was not downloaded because of: {response} .")
             continue
         download_collection_pdf(
             response=response,
             pdf_name=collection.downloaded_file_name,
             destination_folder=destination_folder,
         )
-        time.sleep(3)
+        time.sleep(2)
 
     print("dacoromanica_downloader finished.")
 

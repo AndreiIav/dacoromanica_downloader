@@ -1,25 +1,7 @@
 from collections import namedtuple
 
-import pytest
-
-from dacoromanica_downloader.download_pdf import get_link_response
-from dacoromanica_downloader.main import create_CollectionPdf, generate_next_page_url
+from dacoromanica_downloader.main import create_CollectionPdf
 from dacoromanica_downloader.model import CollectionPdf
-from dacoromanica_downloader.scrape import get_soup
-
-
-@pytest.mark.parametrize("test_file", ["test_data_main/collections_page1.html"])
-def test_generate_next_page_url(get_path_to_test_file, access_local_file_with_requests):
-    link = get_path_to_test_file
-    response = get_link_response(link, access_local_file_with_requests)
-    soup = get_soup(response)
-
-    res = generate_next_page_url(soup, next_page_link_identifier="collection_details")
-
-    res_list = list(res)
-
-    assert len(res_list) == 1
-    assert res_list[0] == "collection_details_page1.html"
 
 
 def test_create_CollectionPdf():

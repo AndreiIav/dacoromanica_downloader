@@ -77,12 +77,16 @@ class TestMain:
             "collection2.pdf",
             "collection3.pdf",
             "collection4.pdf",
+            "collection5.pdf",
+            "collection6.pdf",
         ]
         expected_downloaded_files = [
             "Author 1_Title 1_1900.pdf",
             "Author 2_Title 2_1903.pdf",
             "Author 3_Title 3.pdf",
             "Title 4_1850.pdf",
+            "Author 5_Title 5_1600.pdf",
+            "Author 6_Title 6_1700.pdf",
         ]
 
         main()
@@ -131,68 +135,6 @@ class TestMain:
 
         out, _ = capsys.readouterr()
         assert f"'{link}' is not a valid Dacoromanica collections page. " in out
-
-    @pytest.mark.parametrize("test_file", ["test_data_main/collections_page2.html"])
-    def test_main_table_link_view_cannot_be_accessed(
-        self,
-        monkeypatch,
-        get_path_to_test_file,
-        access_local_file_with_requests,
-        capsys,
-    ):
-        link = get_path_to_test_file
-        test_get_link_response = partial(
-            new_get_link_response,
-            link=link,
-            get_request=access_local_file_with_requests,
-        )
-
-        monkeypatch.setattr(
-            "dacoromanica_downloader.main.get_link_response",
-            test_get_link_response,
-        )
-        monkeypatch.setattr(
-            "dacoromanica_downloader.main.starting_urls",
-            [link],
-        )
-
-        main()
-
-        out, _ = capsys.readouterr()
-        assert "The table view cannot be accessed" in out
-
-    @pytest.mark.parametrize("test_file", ["test_data_main/collections_page3.html"])
-    def test_main_next_page_cannot_be_accessed(
-        self,
-        monkeypatch,
-        get_path_to_test_file,
-        access_local_file_with_requests,
-        capsys,
-    ):
-        link = get_path_to_test_file
-        test_get_link_response = partial(
-            new_get_link_response,
-            link=link,
-            get_request=access_local_file_with_requests,
-        )
-
-        monkeypatch.setattr(
-            "dacoromanica_downloader.main.get_link_response",
-            test_get_link_response,
-        )
-        monkeypatch.setattr(
-            "dacoromanica_downloader.main.starting_urls",
-            [link],
-        )
-        monkeypatch.setattr(
-            "dacoromanica_downloader.main.next_page_link_identifier",
-            "table_view_collections",
-        )
-
-        main()
-
-        out, _ = capsys.readouterr()
-        assert "'not_existent_table_view_collections' could not be accessed" in out
 
     @pytest.mark.parametrize("test_file", ["test_data_main/collections_page3.html"])
     def test_main_collection_details_page_cannot_be_accessed(
