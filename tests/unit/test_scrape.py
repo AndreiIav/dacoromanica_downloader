@@ -1,5 +1,3 @@
-from functools import partial
-
 import pytest
 from bs4 import BeautifulSoup
 
@@ -19,21 +17,23 @@ class TestGetSoup:
         self, access_local_file_with_requests, get_path_to_test_file
     ):
         link = get_path_to_test_file
-        new_fn_get_link_response = partial(
-            get_link_response, get_request=access_local_file_with_requests
-        )
+        response = get_link_response(link, access_local_file_with_requests)
 
-        get_soup_value = get_soup(link, new_fn_get_link_response)
+        soup = get_soup(response)
 
-        assert isinstance(get_soup_value, BeautifulSoup)
+        assert isinstance(soup, BeautifulSoup)
 
-    def test_get_soup_returns_error_message_when_error_occurs(self):
-        link = "link"
+    @pytest.mark.parametrize("test_file", ["test_page.html"])
+    def test_get_soup_contains_correct_data(
+        self, access_local_file_with_requests, get_path_to_test_file
+    ):
+        link = get_path_to_test_file
+        response = get_link_response(link, access_local_file_with_requests)
 
-        get_soup_value = get_soup(link)
+        soup = get_soup(response)
 
-        assert isinstance(get_soup_value, str)
-        assert "RequestException" in get_soup_value
+        assert soup.find("h1").string == "vânătoare bărbați pietriș"
+        assert soup.find("p").string == "VÂNĂTOARE BĂRBAȚI PIETRIȘ"
 
 
 class TestGetNextPageUrl:
@@ -42,12 +42,13 @@ class TestGetNextPageUrl:
         self, access_local_file_with_requests, get_path_to_test_file
     ):
         link = get_path_to_test_file
-        new_fn_get_link_response = partial(
-            get_link_response, get_request=access_local_file_with_requests
-        )
-        soup = get_soup(link, new_fn_get_link_response)
+        response = get_link_response(link, access_local_file_with_requests)
+        soup = get_soup(response)
+        next_page_link_identifier = "func=results-next-page&result_format=001"
 
-        res = get_next_page_url(soup)
+        res = get_next_page_url(
+            soup, next_page_link_identifier=next_page_link_identifier
+        )
 
         assert res == "nextPageLinkfunc=results-next-page&result_format=001"
 
@@ -56,12 +57,11 @@ class TestGetNextPageUrl:
         self, access_local_file_with_requests, get_path_to_test_file
     ):
         link = get_path_to_test_file
-        new_fn_get_link_response = partial(
-            get_link_response, get_request=access_local_file_with_requests
-        )
-        soup = get_soup(link, new_fn_get_link_response)
+        response = get_link_response(link, access_local_file_with_requests)
+        soup = get_soup(response)
+        next_page_link_identifier = "func=results-next-page&result_format=001"
 
-        res = get_next_page_url(soup)
+        res = get_next_page_url(soup, next_page_link_identifier)
 
         assert res is None
 
@@ -72,14 +72,14 @@ class TestGetCollectionInfo:
         self, access_local_file_with_requests, get_path_to_test_file
     ):
         link = get_path_to_test_file
-        new_fn_get_link_response = partial(
-            get_link_response, get_request=access_local_file_with_requests
-        )
-        soup = get_soup(link, new_fn_get_link_response)
+        response = get_link_response(link, access_local_file_with_requests)
+        soup = get_soup(response)
 
         # get_collection_info is a generator function so we cast its results
         # to a list to easily test the returned values
-        results = list(get_collection_info(soup))
+        results = list(
+            get_collection_info(soup, collections_base_link_identifier="base=GEN01")
+        )
 
         assert len(results) == 3
 
@@ -105,31 +105,22 @@ class TestGetCollectionYear:
         self, get_path_to_test_file, access_local_file_with_requests
     ):
         link = get_path_to_test_file
-        new_fn_get_link_response = partial(
-            get_link_response, get_request=access_local_file_with_requests
-        )
+        response = get_link_response(link, access_local_file_with_requests)
+        soup = get_soup(response)
 
-        res = get_collection_year(link, new_fn_get_link_response)
+        res = get_collection_year(soup)
 
         assert res == "2023"
-
-    def test_get_collection_year_returns_None_if_exception_occurs(self):
-        link = "link"
-
-        res = get_collection_year(link)
-
-        assert res is None
 
     @pytest.mark.parametrize("test_file", ["test_page.html"])
     def test_get_collection_year_returns_None_if_year_is_not_found(
         self, get_path_to_test_file, access_local_file_with_requests
     ):
         link = get_path_to_test_file
-        new_fn_get_link_response = partial(
-            get_link_response, get_request=access_local_file_with_requests
-        )
+        response = get_link_response(link, access_local_file_with_requests)
+        soup = get_soup(response)
 
-        res = get_collection_year(link, new_fn_get_link_response)
+        res = get_collection_year(soup)
 
         assert res is None
 
@@ -140,30 +131,21 @@ class TestGetLinkForTableView:
         self, get_path_to_test_file, access_local_file_with_requests
     ):
         link = get_path_to_test_file
-        new_fn_get_link_response = partial(
-            get_link_response, get_request=access_local_file_with_requests
-        )
+        response = get_link_response(link, access_local_file_with_requests)
+        soup = get_soup(response)
 
-        res = get_link_for_table_view(link, new_fn_get_link_response)
+        res = get_link_for_table_view(soup)
 
         assert res == "table_view_link.html"
-
-    def test_get_link_for_table_view_returns_None_if_exception_occurs(self):
-        link = "link"
-
-        res = get_link_for_table_view(link)
-
-        assert res is None
 
     @pytest.mark.parametrize("test_file", ["test_page.html"])
     def test_get_link_for_table_view_returns_None_if_link_not_found(
         self, get_path_to_test_file, access_local_file_with_requests
     ):
         link = get_path_to_test_file
-        new_fn_get_link_response = partial(
-            get_link_response, get_request=access_local_file_with_requests
-        )
+        response = get_link_response(link, access_local_file_with_requests)
+        soup = get_soup(response)
 
-        res = get_link_for_table_view(link, new_fn_get_link_response)
+        res = get_link_for_table_view(soup)
 
         assert res is None

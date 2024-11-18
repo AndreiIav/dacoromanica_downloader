@@ -10,7 +10,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/AndreiIav/dacoromanica_downloader"
+Repository = "https://github.com/AndreiIav/dacoromanica_downloader"
 
 [build-system]
 requires = ["hatchling"]

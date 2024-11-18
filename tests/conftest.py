@@ -1,4 +1,6 @@
+import os
 from pathlib import Path
+from urllib.request import url2pathname
 
 import pytest
 import requests
@@ -16,10 +18,12 @@ class LocalFileAdapter(requests.adapters.BaseAdapter):
             return 501, "Not Implemented"
         elif method.lower() not in ("get", "head"):
             return 405, "Method Not Allowed"
-        elif Path.is_dir(path):
+        elif os.path.isdir(path):
             return 400, "Path Not A File"
-        elif not Path.is_file(path):
+        elif not os.path.isfile(path):
             return 404, "File Not Found"
+        elif not os.access(path, os.R_OK):
+            return 403, "Access Denied"
         else:
             return 200, "OK"
 
@@ -28,7 +32,7 @@ class LocalFileAdapter(requests.adapters.BaseAdapter):
 
         @type req: C{PreparedRequest}
         """
-        path = Path(req.path_url)
+        path = os.path.normcase(os.path.normpath(url2pathname(req.path_url)))
         response = requests.Response()
 
         response.status_code, response.reason = self._chkpath(req.method, path)
@@ -56,7 +60,7 @@ class LocalFileAdapter(requests.adapters.BaseAdapter):
 @pytest.fixture
 def access_local_file_with_requests():
     requests_session = requests.Session()
-    requests_session.mount("file://", LocalFileAdapter())
+    requests_session.mount("file:///", LocalFileAdapter())
 
     yield requests_session.get
 
@@ -64,7 +68,7 @@ def access_local_file_with_requests():
 @pytest.fixture
 def get_path_to_test_file(test_file: str):
     test_file_path = Path("tests") / "test_data" / test_file
-    test_file_path = test_file_path.absolute()
-    file_link = f"file://{str(test_file_path)}"
+    test_file_path = test_file_path.resolve()
+    file_link = f"file:///{str(test_file_path)}"
 
     yield file_link

@@ -1,5 +1,3 @@
-from functools import partial
-
 import pytest
 
 from dacoromanica_downloader.download_pdf import (
@@ -15,15 +13,12 @@ def test_download_collection_pdf_saves_file(
     pdf_link = get_path_to_test_file
     pdf_name = "test_pdf_name.pdf"
     destination_folder = tmp_path
-    new_fn_get_link_response = partial(
-        get_link_response, get_request=access_local_file_with_requests
-    )
+    response = get_link_response(pdf_link, get_request=access_local_file_with_requests)
 
     download_collection_pdf(
-        pdf_link=pdf_link,
+        response=response,
         pdf_name=pdf_name,
         destination_folder=destination_folder,
-        fn_get_response=new_fn_get_link_response,
     )
 
     destination_path = tmp_path / pdf_name
@@ -31,34 +26,6 @@ def test_download_collection_pdf_saves_file(
 
     assert destination_path.is_file()
     assert f"'{pdf_name}' downloaded in '{destination_folder}' folder." in out
-
-
-def test_download_collection_pdf_does_not_download_file_if_no_valid_requests_response(
-    tmp_path, capsys
-):
-    pdf_link = "pdf_link"
-    pdf_name = "test_pdf_name.pdf"
-    destination_folder = tmp_path
-
-    def get_request_returns_error_message(link):
-        return "Error message"
-
-    http_response = get_request_returns_error_message(pdf_link)
-
-    download_collection_pdf(
-        pdf_link=pdf_link,
-        pdf_name=pdf_name,
-        destination_folder=destination_folder,
-        fn_get_response=get_request_returns_error_message,
-    )
-
-    destination_path = tmp_path / pdf_name
-    out, _ = capsys.readouterr()
-
-    assert not destination_path.is_file()
-    assert (
-        f"'{pdf_name}' was not downloaded due to this error: {http_response} ."
-    ) in out
 
 
 @pytest.mark.parametrize("test_file", ["test.pdf"])
@@ -78,16 +45,12 @@ def test_download_collection_pdf_shortens_pdf_name_that_is_over_limit_and_saves_
     pdf_name_within_limit = "a" * diff_until_limit
     pdf_name_over_limit = "b" * 5
     pdf_name = f"{pdf_name_within_limit}{pdf_name_over_limit}{extension}"
-
-    new_fn_get_link_response = partial(
-        get_link_response, get_request=access_local_file_with_requests
-    )
+    response = get_link_response(pdf_link, get_request=access_local_file_with_requests)
 
     download_collection_pdf(
-        pdf_link=pdf_link,
+        response=response,
         pdf_name=pdf_name,
         destination_folder=destination_folder,
-        fn_get_response=new_fn_get_link_response,
     )
 
     destination_path = tmp_path / f"{pdf_name_within_limit}{extension}"
@@ -113,16 +76,13 @@ def test_download_collection_pdf_does_not_download_file_if_name_cannot_be_shorte
     destination_folder_string_length = len(str(destination_folder))
     filename_limit = destination_folder_string_length - 10
     pdf_name = "a.pdf"
-
-    new_fn_get_link_response = partial(
-        get_link_response, get_request=access_local_file_with_requests
-    )
+    response = get_link_response(pdf_link, get_request=access_local_file_with_requests)
 
     download_collection_pdf(
-        pdf_link=pdf_link,
+        response=response,
         pdf_name=pdf_name,
         destination_folder=destination_folder,
-        fn_get_response=new_fn_get_link_response,
+        # fn_get_response=new_fn_get_link_response,
         path_length_limit=filename_limit,
     )
 
@@ -144,18 +104,14 @@ def test_download_collection_pdf_does_not_download_file_if_it_is_already_downloa
     already_existing_file = destination_folder / "test_pdf_name.pdf"
     already_existing_file_content = b"Some content"
     already_existing_file.write_bytes(already_existing_file_content)
-
     pdf_link = get_path_to_test_file
     pdf_name = "test_pdf_name.pdf"
-    new_fn_get_link_response = partial(
-        get_link_response, get_request=access_local_file_with_requests
-    )
+    response = get_link_response(pdf_link, get_request=access_local_file_with_requests)
 
     download_collection_pdf(
-        pdf_link=pdf_link,
+        response=response,
         pdf_name=pdf_name,
         destination_folder=destination_folder,
-        fn_get_response=new_fn_get_link_response,
     )
 
     out, _ = capsys.readouterr()
