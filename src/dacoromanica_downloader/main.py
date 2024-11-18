@@ -58,9 +58,11 @@ def create_CollectionPdf(
 
 
 def main() -> None:
+    print("dacoromanica_downloader started ...")
     all_collections: list[CollectionPdf] = []
 
     for starting_url in starting_urls:
+        print(f"Gathering data for link {starting_url} ...")
         starting_url_response = get_link_response(link=starting_url)
         if not isinstance(starting_url_response, requests.Response):
             print(
@@ -102,8 +104,7 @@ def main() -> None:
                 break
             time.sleep(1)
 
-    print(f"all_collections length is {len(all_collections)}")
-
+    print("Updating collections year ...")
     for collection in all_collections:
         year_response = get_link_response(link=collection.details_link)
         if (
@@ -119,6 +120,7 @@ def main() -> None:
 
     sorted_collections = sorted(all_collections, key=lambda x: (x.year, x.author))
 
+    print("Starting downloading ...")
     for collection in sorted_collections:
         response = get_link_response(link=collection.pdf_link)
         if not isinstance(response, requests.Response) or response.status_code != 200:
