@@ -2,6 +2,28 @@ from __future__ import annotations
 
 
 class CollectionPdf:
+    """
+    Represents metadata and details of a PDF file to be downloaded.
+
+    The class encapsulates information about a single PDF file including the
+    link to all details of the document (details_link), title, download link,
+    author, and publication year.
+
+    Attributes:
+        details_link (str): The URL to the details page of the collection item.
+        title (str): The title of the collection item.
+        pdf_link (str): The URL to download the PDF file.
+        author (str): The author of the collection item. Defaults to an empty
+        string.
+        year (int): The publication year of the collection item. Defaults to 0.
+
+    Methods:
+        update_collection_year: Updates the collection's year attribute with a
+        formatted year.
+        downloaded_file_name: Gets the name used for the downloaded collection
+        file.
+    """
+
     def __init__(
         self,
         details_link: str,
