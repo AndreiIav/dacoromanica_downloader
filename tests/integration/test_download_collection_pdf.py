@@ -82,7 +82,6 @@ def test_download_collection_pdf_does_not_download_file_if_name_cannot_be_shorte
         response=response,
         pdf_name=pdf_name,
         destination_folder=destination_folder,
-        # fn_get_response=new_fn_get_link_response,
         path_length_limit=filename_limit,
     )
 
