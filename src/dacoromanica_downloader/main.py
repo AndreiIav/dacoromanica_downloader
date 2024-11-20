@@ -101,8 +101,7 @@ def main() -> None:
             next_page_url = get_next_page_url(
                 soup=page_soup, next_page_link_identifier=next_page_link_identifier
             )
-            if next_page_url is None:
-                break
+
             time.sleep(1)
 
     print("Updating pdf collections date of publication...")
