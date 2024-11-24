@@ -107,7 +107,7 @@ class CollectionPdf:
         """
         res = ""
         for character in name:
-            if ord(character) not in (60, 62, 58, 39, 47, 39, 92, 124, 47, 63, 42):
+            if ord(character) not in (60, 62, 58, 39, 34, 47, 92, 124, 63, 42):
                 res += character
 
         return res

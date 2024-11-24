@@ -174,7 +174,7 @@ class TestCollectionPdfDownloadedFileName:
     def test_downloaded_file_name_removes_forbidden_charactes_from_title_and_author(
         self,
     ):
-        forbiden_characters = "<>:'" "/'\\|/?*"
+        forbiden_characters = "<>:'\"/'\\|/?*"
         title = "title"
         author = "author"
 
