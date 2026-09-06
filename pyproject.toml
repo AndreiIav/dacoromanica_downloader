@@ -8,6 +8,21 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+    "beautifulsoup4",
+    "requests",
+    "html5lib"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "mypy",
+    "types-beautifulsoup4",
+    "types-html5lib",
+    "types-requests",
+]
 
 [project.urls]
 Repository = "https://github.com/AndreiIav/dacoromanica_downloader"
