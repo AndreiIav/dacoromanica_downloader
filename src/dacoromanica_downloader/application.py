@@ -1,6 +1,6 @@
 import time
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
 
 import requests
 
@@ -8,7 +8,6 @@ from dacoromanica_downloader.download_pdf import (
     download_collection_pdf,
     get_link_response,
 )
-from dacoromanica_downloader.get_starting_urls import get_starting_urls
 from dacoromanica_downloader.model import CollectionPdf
 from dacoromanica_downloader.scrape import (
     get_collection_info,
@@ -17,12 +16,6 @@ from dacoromanica_downloader.scrape import (
     get_next_page_url,
     get_soup,
 )
-
-starting_urls_file_path: Path = Path("starting_urls.txt")
-starting_urls: list[str] = get_starting_urls(urls_file_path=starting_urls_file_path)
-next_page_link_identifier: str = "func=results-next-page&result_format=001"
-collections_base_link_identifier: str = "base=GEN01"
-destination_folder: Path = Path("downloaded_files")
 
 
 def create_CollectionPdf(
@@ -57,7 +50,12 @@ def create_CollectionPdf(
     return all_page_collections
 
 
-def main() -> None:
+def run_dacoromanica_downloader(
+    starting_urls: list[str],
+    destination_folder: Path,
+    next_page_link_identifier: str,
+    collections_base_link_identifier: str,
+) -> None:
     print("dacoromanica_downloader started...")
 
     all_collections: list[CollectionPdf] = []
@@ -139,4 +137,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()  # pragma: no cover
+    run_dacoromanica_downloader()  # pragma: no cover
+    run_dacoromanica_downloader()  # pragma: no cover

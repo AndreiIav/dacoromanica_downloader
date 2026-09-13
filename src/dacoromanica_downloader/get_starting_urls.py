@@ -25,8 +25,8 @@ def get_starting_urls(urls_file_path: Path) -> list[str]:
     """
     if not urls_file_path.is_file():
         raise FileNotFoundError(
-            f"'{str(urls_file_path)}' file does not exist."
-            f" Please add a '{str(urls_file_path)}' in the"
+            f"'{urls_file_path}' file does not exist."
+            f" Please add a '{urls_file_path}' in the"
             " 'dacoromanica_downloader' folder."
         )
 
