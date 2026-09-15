@@ -26,11 +26,15 @@ Create the virtual environment:\
 Activate the virtual environment:\
 `venv\Scripts\activate`
 
-Install the python packages specified in requirements.txt:\
-`(venv) $ pip install -r requirements.txt`
-
+# Normal users
 Install the dacoromanica_downloader package:\
 `(venv) $ pip install -e .`
+
+# Developers
+Install the package in editable mode together with its development dependencies:\
+`(venv) $ python -m pip install -e ".[dev]"`
+
+The development dependencies include the tools needed for testing, code coverage, and static type checking.
 
 # Collections page
 **dacoromanica_downloader** works by crawling collections pages and extracting data from them. A collections page is one that consists of multiple PDF file links and their details. An example of a collections page is: \
@@ -41,7 +45,7 @@ Another example can be found in the _starting_urs.txt_ file. **dacoromanica_down
 Add the desired collections page link to the **starting_urls.txt** file. If  there are multiple pages for the collection (like in the example from the previous section), only the first page url needs to be added. The next pages will be crawled automatically. The default link present in the **starting_urls.txt** file is a valid one, but is there only as an example and can be deleted. Multiple collections page links can be added one after another (separated by a space) or on separate lines.
 
 Run dacoromanica_downloader:\
-`(venv) $ python -m dacoromanica_downloader.main`
+`(venv) $ python dacoromanica_downloader`
 
 The PDF files will be downloaded in the **downloaded_files** folder.
 
@@ -56,6 +60,9 @@ This application was written using Python 3.10.
 
 
 # Testing
+Install the package with its development dependencies before running the tests:\
+`(venv) $ python -m pip install -e ".[dev]"`
+
 To run all the tests:\
 `(venv) $ pytest`
 

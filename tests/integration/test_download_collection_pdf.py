@@ -58,8 +58,7 @@ def test_download_collection_pdf_shortens_pdf_name_that_is_over_limit_and_saves_
 
     assert destination_path.is_file()
     assert (
-        f"'{pdf_name}' file name was shortened to:"
-        f" '{pdf_name_within_limit}{extension}'"
+        f"'{pdf_name}' file name was shortened to: '{pdf_name_within_limit}{extension}'"
     ) in out
     assert (
         f"'{pdf_name_within_limit}{extension}' downloaded in"
@@ -121,3 +120,22 @@ def test_download_collection_pdf_does_not_download_file_if_it_is_already_downloa
 
     file_content = (destination_folder / pdf_name).read_bytes()
     assert file_content == already_existing_file_content
+
+
+@pytest.mark.parametrize("test_file", ["test.pdf"])
+def test_download_collection_pdf_creates_destination_directory(
+    access_local_file_with_requests,
+    get_path_to_test_file,
+    tmp_path,
+):
+    response = get_link_response(
+        get_path_to_test_file, get_request=access_local_file_with_requests
+    )
+    destination = tmp_path / "nested" / "downloads"
+
+    download_collection_pdf(
+        response=response, pdf_name="test.pdf", destination_folder=destination
+    )
+
+    assert destination.is_dir()
+    assert (destination / "test.pdf").is_file()

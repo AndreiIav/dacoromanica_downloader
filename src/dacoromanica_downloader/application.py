@@ -1,5 +1,5 @@
 import time
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from pathlib import Path
 
 import requests
@@ -16,6 +16,12 @@ from dacoromanica_downloader.scrape import (
     get_next_page_url,
     get_soup,
 )
+
+DEFAULT_NEXT_PAGE_LINK_IDENTIFIER = "func=results-next-page&result_format=001"
+DEFAULT_COLLECTIONS_BASE_LINK_IDENTIFIER = "base=GEN01"
+
+ResponseGetter = Callable[[str], requests.Response | str]
+WaitFunction = Callable[[float], None]
 
 
 def create_CollectionPdf(
@@ -53,8 +59,10 @@ def create_CollectionPdf(
 def run_dacoromanica_downloader(
     starting_urls: list[str],
     destination_folder: Path,
-    next_page_link_identifier: str,
-    collections_base_link_identifier: str,
+    next_page_link_identifier: str = DEFAULT_NEXT_PAGE_LINK_IDENTIFIER,
+    collections_base_link_identifier: str = DEFAULT_COLLECTIONS_BASE_LINK_IDENTIFIER,
+    get_response: ResponseGetter = get_link_response,
+    wait: WaitFunction = time.sleep,
 ) -> None:
     print("dacoromanica_downloader started...")
 
@@ -62,7 +70,7 @@ def run_dacoromanica_downloader(
 
     for starting_url in starting_urls:
         print(f"Gathering data from url: '{starting_url}'...")
-        starting_url_response = get_link_response(link=starting_url)
+        starting_url_response = get_response(link=starting_url)
         if not isinstance(starting_url_response, requests.Response):
             print(
                 f"{starting_url} could not be accessed because of: "
@@ -81,7 +89,7 @@ def run_dacoromanica_downloader(
 
         next_page_url = table_view_url
         while next_page_url:
-            response = get_link_response(link=next_page_url)
+            response = get_response(link=next_page_url)
             if (
                 not isinstance(response, requests.Response)
                 or response.status_code != 200
@@ -100,11 +108,11 @@ def run_dacoromanica_downloader(
                 soup=page_soup, next_page_link_identifier=next_page_link_identifier
             )
 
-            time.sleep(1)
+            wait(1)
 
     print("Updating pdf collections date of publication...")
     for collection in all_collections:
-        year_response = get_link_response(link=collection.details_link)
+        year_response = get_response(link=collection.details_link)
         if (
             not isinstance(year_response, requests.Response)
             or year_response.status_code != 200
@@ -114,7 +122,7 @@ def run_dacoromanica_downloader(
         year = get_collection_year(soup=year_soup)
         if year:
             collection.update_collection_year(year=year)
-        time.sleep(1)
+        wait(1)
 
     print(f"Number of pdf files to be downloaded: {len(all_collections)}")
 
@@ -122,7 +130,7 @@ def run_dacoromanica_downloader(
 
     print("Starting downloading...")
     for collection in sorted_collections:
-        response = get_link_response(link=collection.pdf_link)
+        response = get_response(link=collection.pdf_link)
         if not isinstance(response, requests.Response) or response.status_code != 200:
             print(f"'{collection.title}' was not downloaded because of: {response} .")
             continue
@@ -131,11 +139,6 @@ def run_dacoromanica_downloader(
             pdf_name=collection.downloaded_file_name,
             destination_folder=destination_folder,
         )
-        time.sleep(2)
+        wait(2)
 
     print("dacoromanica_downloader finished.")
-
-
-if __name__ == "__main__":
-    run_dacoromanica_downloader()  # pragma: no cover
-    run_dacoromanica_downloader()  # pragma: no cover

@@ -30,6 +30,10 @@ def new_get_link_response(
         return f"RequestException : {e}"
 
 
+def do_not_wait(_seconds: float) -> None:
+    pass
+
+
 class TestMain:
     @pytest.mark.parametrize("test_file", ["test_data_main/collections_page1.html"])
     def test_run_application_end_to_end_happy_path(
@@ -47,10 +51,6 @@ class TestMain:
             get_request=access_local_file_with_requests,
         )
 
-        monkeypatch.setattr(
-            "dacoromanica_downloader.application.get_link_response",
-            test_get_link_response,
-        )
         starting_urls = [link]
         next_page_link_identifier = "table_view_collections"
         collections_base_link_identifier = "collection_details"
@@ -81,6 +81,8 @@ class TestMain:
             destination_folder=destination_location,
             next_page_link_identifier=next_page_link_identifier,
             collections_base_link_identifier=collections_base_link_identifier,
+            get_response=test_get_link_response,
+            wait=do_not_wait,
         )
 
         out, _ = capsys.readouterr()
@@ -139,7 +141,6 @@ class TestMain:
     @pytest.mark.parametrize("test_file", ["test_data_main/collections_page3.html"])
     def test_run_application_collection_details_page_cannot_be_accessed(
         self,
-        monkeypatch,
         get_path_to_test_file,
         access_local_file_with_requests,
         capsys,
@@ -152,10 +153,6 @@ class TestMain:
             get_request=access_local_file_with_requests,
         )
 
-        monkeypatch.setattr(
-            "dacoromanica_downloader.application.get_link_response",
-            test_get_link_response,
-        )
         starting_urls = [link]
         next_page_link_identifier = "table_view_collections"
         collections_base_link_identifier = "collection_details"
@@ -178,6 +175,8 @@ class TestMain:
             destination_folder=destination_location,
             next_page_link_identifier=next_page_link_identifier,
             collections_base_link_identifier=collections_base_link_identifier,
+            get_response=test_get_link_response,
+            wait=do_not_wait,
         )
 
         out, _ = capsys.readouterr()
@@ -195,7 +194,6 @@ class TestMain:
     @pytest.mark.parametrize("test_file", ["test_data_main/collections_page4.html"])
     def test_run_application_collection_pdf_page_cannot_be_accessed(
         self,
-        monkeypatch,
         get_path_to_test_file,
         access_local_file_with_requests,
         capsys,
@@ -208,10 +206,6 @@ class TestMain:
             get_request=access_local_file_with_requests,
         )
 
-        monkeypatch.setattr(
-            "dacoromanica_downloader.application.get_link_response",
-            test_get_link_response,
-        )
         starting_urls = [link]
         next_page_link_identifier = "table_view_collections"
         collections_base_link_identifier = "collection_details"
@@ -222,6 +216,8 @@ class TestMain:
             destination_folder=destination_location,
             next_page_link_identifier=next_page_link_identifier,
             collections_base_link_identifier=collections_base_link_identifier,
+            get_response=test_get_link_response,
+            wait=do_not_wait,
         )
 
         out, _ = capsys.readouterr()
