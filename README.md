@@ -1,5 +1,5 @@
 # Overview
-This is a Python package to automatically download PDF files from [Biblioteca Digitala a Bucureștilor website](http://digitool.bibmet.ro:8881/R/PSCBLKPMY6HF14YIT63KQK1UNMBQV4VKUJY67SPN152CK7AI3F-01191?func=search). 
+This is a Python package to automatically download PDF files from [Biblioteca Digitala a Bucureștilor website](http://digitool.bibmet.ro:8881/R/PSCBLKPMY6HF14YIT63KQK1UNMBQV4VKUJY67SPN152CK7AI3F-01191?func=search).
 
 # Features
 - automatically downloads PDF files
@@ -11,7 +11,7 @@ This is a Python package to automatically download PDF files from [Biblioteca Di
 Pull down the source code from GitHub:\
 `git clone https://github.com/AndreiIav/dacoromanica_downloader.git`
 
-Change the current working directory to 'dacoromanica_downloader' folder.
+Change the current working directory to the 'dacoromanica_downloader' folder.
 
 Create and activate a virtual environment:\
 On Linux:\
@@ -26,9 +26,15 @@ Create the virtual environment:\
 Activate the virtual environment:\
 `venv\Scripts\activate`
 
-# Normal users
-Install the dacoromanica_downloader package:\
-`(venv) $ pip install -e .`
+## Normal users
+Install the dacoromanica_downloader package and its runtime dependencies:\
+`(venv) $ python -m pip install .`
+
+## Developers
+Install the package in editable mode together with its development dependencies:\
+`(venv) $ python -m pip install -e ".[dev]"`
+
+The development dependencies include the tools needed for testing, code coverage, and static type checking.
 
 # Developers
 Install the package in editable mode together with its development dependencies:\
@@ -39,10 +45,10 @@ The development dependencies include the tools needed for testing, code coverage
 # Collections page
 **dacoromanica_downloader** works by crawling collections pages and extracting data from them. A collections page is one that consists of multiple PDF file links and their details. An example of a collections page is: \
 http://digitool.bibmet.ro:8881/R/6SV4A783G2FGNA2Q3UDUIS2YD1HNIGQLHGEGSV5G55V6VDU53M-04211?func=collections-result&collection_id=1413 .\
-Another example can be found in the _starting_urs.txt_ file. **dacoromanica_downloader** will not work if any other type of _Biblioteca Digitala a Bucureștilor_ url is used.
+Another example can be found in the _starting_urls.txt_ file. **dacoromanica_downloader** will not work if any other type of _Biblioteca Digitala a Bucureștilor_ url is used.
 
 # Downloading PDF files
-Add the desired collections page link to the **starting_urls.txt** file. If  there are multiple pages for the collection (like in the example from the previous section), only the first page url needs to be added. The next pages will be crawled automatically. The default link present in the **starting_urls.txt** file is a valid one, but is there only as an example and can be deleted. Multiple collections page links can be added one after another (separated by a space) or on separate lines.
+Add the desired collections page link to the **starting_urls.txt** file. If there are multiple pages for the collection (like in the example from the previous section), only the first page url needs to be added. The next pages will be crawled automatically. The default link present in the **starting_urls.txt** file is a valid one, but is there only as an example and can be deleted. Multiple collections page links can be added one after another (separated by a space) or on separate lines.
 
 Run dacoromanica_downloader:\
 `(venv) $ python dacoromanica_downloader`
@@ -52,8 +58,9 @@ The PDF files will be downloaded in the **downloaded_files** folder.
 # Key Python Modules Used
 - **requests**: Python library for HTTP requests
 - **beautifulsoup4**: Python library for pulling data out of HTML and XML files
+- **html5lib**: HTML parser used by beautifulsoup4
 - **pytest**: framework for testing Python projects
-- **pytest-cov**: pytest extension for running coverage\.py to check code coverage of tests
+- **pytest-cov**: pytest extension for running coverage.py to check code coverage of tests
 - **mypy**: static type checker for Python
 
 This application was written using Python 3.10.
