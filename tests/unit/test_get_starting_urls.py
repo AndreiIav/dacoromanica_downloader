@@ -20,8 +20,8 @@ def test_get_starting_urls_raises_FileNotFoundError(tmp_path):
         get_starting_urls(tmp_path)
 
     assert str(err.value) == (
-        f"'{str(tmp_path)}' file does not exist."
-        f" Please add a '{str(tmp_path)}' in the"
+        f"'{tmp_path}' file does not exist."
+        f" Please add a '{tmp_path}' in the"
         " 'dacoromanica_downloader' folder."
     )
 

@@ -130,7 +130,7 @@ def download_collection_pdf(
         PathTooLongError: If the filename cannot be shortened to meet system
         path length limitations.
     """
-
+    destination_folder.mkdir(parents=True, exist_ok=True)
     filename = (destination_folder / pdf_name).resolve()
 
     # check if the length of the path is greater than 250 characters and try to

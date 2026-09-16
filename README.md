@@ -45,7 +45,7 @@ Another example can be found in the _starting_urls.txt_ file. **dacoromanica_dow
 Add the desired collections page link to the **starting_urls.txt** file. If there are multiple pages for the collection (like in the example from the previous section), only the first page url needs to be added. The next pages will be crawled automatically. The default link present in the **starting_urls.txt** file is a valid one, but is there only as an example and can be deleted. Multiple collections page links can be added one after another (separated by a space) or on separate lines.
 
 Run dacoromanica_downloader:\
-`(venv) $ python -m dacoromanica_downloader.main`
+`(venv) $ dacoromanica_downloader`
 
 The PDF files will be downloaded in the **downloaded_files** folder.
 

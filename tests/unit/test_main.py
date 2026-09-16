@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-from dacoromanica_downloader.main import create_CollectionPdf
+from dacoromanica_downloader.application import create_CollectionPdf
 from dacoromanica_downloader.model import CollectionPdf
 
 
