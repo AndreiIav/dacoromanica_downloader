@@ -34,11 +34,10 @@ def do_not_wait(_seconds: float) -> None:
     pass
 
 
-class TestMain:
+class TestRunApplication:
     @pytest.mark.parametrize("test_file", ["test_data_main/collections_page1.html"])
     def test_run_application_end_to_end_happy_path(
         self,
-        monkeypatch,
         get_path_to_test_file,
         access_local_file_with_requests,
         tmp_path,
@@ -119,10 +118,18 @@ class TestMain:
         out, _ = capsys.readouterr()
         assert f"{link} could not be accessed" in out
 
+    @pytest.mark.parametrize(
+        "test_file", ["test_data_main/collections_page_no_table_view.html"]
+    )
     def test_run_application_starting_link_contains_no_table_view_link(
-        self, tmp_path, capsys
+        self, get_path_to_test_file, access_local_file_with_requests, tmp_path, capsys
     ):
-        link = "https://link.com"
+        link = get_path_to_test_file
+        test_get_link_response = partial(
+            new_get_link_response,
+            link=link,
+            get_request=access_local_file_with_requests,
+        )
         starting_urls = [link]
         next_page_link_identifier = "table_view_collections"
         collections_base_link_identifier = "collection_details"
@@ -133,6 +140,8 @@ class TestMain:
             destination_folder=destination_location,
             next_page_link_identifier=next_page_link_identifier,
             collections_base_link_identifier=collections_base_link_identifier,
+            get_response=test_get_link_response,
+            wait=do_not_wait,
         )
 
         out, _ = capsys.readouterr()

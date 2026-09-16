@@ -48,15 +48,28 @@ def test_cli_passes_parsed_arguments_to_application(monkeypatch, tmp_path):
 
 
 def test_cli_returns_error_when_source_file_does_not_exist(tmp_path, capsys):
-    missing_source = tmp_path / "missing.txt"
+    source_file = tmp_path / "missing.txt"
 
-    exit_code = cli.main(["--source", str(missing_source)])
+    exit_code = cli.main(["--source", str(source_file)])
+
+    captured = capsys.readouterr()
+
+    print(str(captured.err))
+
+    assert exit_code == 1
+    assert f"Error: '{source_file}' file does not exist." in captured.err
+
+
+def test_cli_returns_error_when_source_file_is_empty(tmp_path, capsys):
+    source_file = tmp_path / "source.txt"
+    source_file.touch()
+
+    exit_code = cli.main(["--source", str(source_file)])
 
     captured = capsys.readouterr()
 
     assert exit_code == 1
-    assert "Error:" in captured.err
-    assert str(missing_source) in captured.err
+    assert f"Error: '{source_file}' file contains no data." in captured.err
 
 
 def test_cli_uses_default_paths(monkeypatch):
