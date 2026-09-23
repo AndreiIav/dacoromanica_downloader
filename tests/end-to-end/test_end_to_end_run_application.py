@@ -16,7 +16,7 @@ def new_get_link_response(
     """
     if "file:///" not in link:
         link_path = Path.cwd() / "tests" / "test_data" / "test_data_main" / link
-        link = "file:///" + str(link_path)
+        link = link_path.as_uri()
     try:
         response = get_request(link, timeout=20)
         return response

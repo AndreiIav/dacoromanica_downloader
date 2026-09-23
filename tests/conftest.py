@@ -69,6 +69,6 @@ def access_local_file_with_requests():
 def get_path_to_test_file(test_file: str):
     test_file_path = Path("tests") / "test_data" / test_file
     test_file_path = test_file_path.resolve()
-    file_link = f"file:///{str(test_file_path)}"
+    file_link = test_file_path.as_uri()
 
     yield file_link
