@@ -1,5 +1,5 @@
 from collections import namedtuple
-from typing import Iterator
+from collections.abc import Iterator
 
 import requests
 from bs4 import BeautifulSoup

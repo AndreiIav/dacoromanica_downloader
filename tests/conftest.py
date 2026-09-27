@@ -38,8 +38,8 @@ class LocalFileAdapter(requests.adapters.BaseAdapter):
         response.status_code, response.reason = self._chkpath(req.method, path)
         if response.status_code == 200 and req.method.lower() != "head":
             try:
-                response.raw = open(path, "rb")
-            except (OSError, IOError) as err:
+                response.raw = open(path, "rb")  # noqa
+            except OSError as err:
                 response.status_code = 500
                 response.reason = str(err)
 

@@ -11,7 +11,7 @@ classifiers = [
 dependencies = [
     "beautifulsoup4",
     "requests",
-    "html5lib"
+    "html5lib",
 ]
 
 [project.optional-dependencies]
@@ -22,6 +22,7 @@ dev = [
     "types-beautifulsoup4",
     "types-html5lib",
     "types-requests",
+    "ruff>=0.16.9"
 ]
 
 [project.urls]
@@ -36,3 +37,10 @@ dacoromanica_downloader = "dacoromanica_downloader.cli:main"
 
 [tool.hatch.metadata]
 allow-direct-references = true
+
+[tool.mypy]
+python_version = "3.10"
+
+[tool.ruff]
+target-version = "py310"
+
