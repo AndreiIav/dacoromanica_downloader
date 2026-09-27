@@ -11,7 +11,7 @@ classifiers = [
 dependencies = [
     "beautifulsoup4",
     "requests",
-    "html5lib"
+    "html5lib",
 ]
 
 [project.optional-dependencies]
@@ -22,6 +22,7 @@ dev = [
     "types-beautifulsoup4",
     "types-html5lib",
     "types-requests",
+    "ruff>=0.16.9"
 ]
 
 [project.urls]
