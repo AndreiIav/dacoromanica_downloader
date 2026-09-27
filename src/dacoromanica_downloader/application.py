@@ -94,8 +94,10 @@ def run_dacoromanica_downloader(
                 not isinstance(response, requests.Response)
                 or response.status_code != 200
             ):
-                f"'{next_page_url}' could not be accessed because of: {response}. "
-                "No files can be downloaded from this link."
+                print(
+                    f"'{next_page_url}' could not be accessed because of: {response}. "
+                    "No files can be downloaded from this link."
+                )
                 break
             page_soup = get_soup(response=response)
             all_collections_on_page_details = get_collection_info(
