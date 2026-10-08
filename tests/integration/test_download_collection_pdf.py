@@ -1,7 +1,7 @@
 import pytest
 
 from dacoromanica_downloader.download_pdf import (
-    download_collection_pdf,
+    get_file_destination_path,
     get_link_response,
 )
 
@@ -15,7 +15,7 @@ def test_download_collection_pdf_saves_file(
     destination_folder = tmp_path
     response = get_link_response(pdf_link, get_request=access_local_file_with_requests)
 
-    download_collection_pdf(
+    get_file_destination_path(
         response=response,
         pdf_name=pdf_name,
         destination_folder=destination_folder,
@@ -47,7 +47,7 @@ def test_download_collection_pdf_shortens_pdf_name_that_is_over_limit_and_saves_
     pdf_name = f"{pdf_name_within_limit}{pdf_name_over_limit}{extension}"
     response = get_link_response(pdf_link, get_request=access_local_file_with_requests)
 
-    download_collection_pdf(
+    get_file_destination_path(
         response=response,
         pdf_name=pdf_name,
         destination_folder=destination_folder,
@@ -77,7 +77,7 @@ def test_download_collection_pdf_does_not_download_file_if_name_cannot_be_shorte
     pdf_name = "a.pdf"
     response = get_link_response(pdf_link, get_request=access_local_file_with_requests)
 
-    download_collection_pdf(
+    get_file_destination_path(
         response=response,
         pdf_name=pdf_name,
         destination_folder=destination_folder,
@@ -106,7 +106,7 @@ def test_download_collection_pdf_does_not_download_file_if_it_is_already_downloa
     pdf_name = "test_pdf_name.pdf"
     response = get_link_response(pdf_link, get_request=access_local_file_with_requests)
 
-    download_collection_pdf(
+    get_file_destination_path(
         response=response,
         pdf_name=pdf_name,
         destination_folder=destination_folder,
@@ -133,7 +133,7 @@ def test_download_collection_pdf_creates_destination_directory(
     )
     destination = tmp_path / "nested" / "downloads"
 
-    download_collection_pdf(
+    get_file_destination_path(
         response=response, pdf_name="test.pdf", destination_folder=destination
     )
 

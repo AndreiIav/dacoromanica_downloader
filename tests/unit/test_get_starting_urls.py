@@ -1,6 +1,6 @@
 import pytest
 
-from dacoromanica_downloader.get_starting_urls import EmptyFileError, get_starting_urls
+from dacoromanica_downloader.path_utils import EmptyFileError, get_starting_urls
 
 
 def test_get_starting_urls_gets_urls(tmp_path):
