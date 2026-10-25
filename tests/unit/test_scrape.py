@@ -1,7 +1,6 @@
 import pytest
 from bs4 import BeautifulSoup
 
-from dacoromanica_downloader.download_pdf import get_link_response
 from dacoromanica_downloader.scrape import (
     get_collection_info,
     get_collection_year,
@@ -10,25 +9,23 @@ from dacoromanica_downloader.scrape import (
     get_soup,
 )
 
+# from dacoromanica_downloader.download_pdf import get_link_response
+
 
 class TestGetSoup:
     @pytest.mark.parametrize("test_file", ["test_page.html"])
-    def test_get_soup_gets_soup(
-        self, access_local_file_with_requests, get_path_to_test_file
-    ):
-        link = get_path_to_test_file
-        response = get_link_response(link, access_local_file_with_requests)
+    def test_get_soup_gets_soup(self, get_path_to_test_file, http_client):
+        url = get_path_to_test_file
+        response = http_client.get_page(url=url)
 
         soup = get_soup(response)
 
         assert isinstance(soup, BeautifulSoup)
 
     @pytest.mark.parametrize("test_file", ["test_page.html"])
-    def test_get_soup_contains_correct_data(
-        self, access_local_file_with_requests, get_path_to_test_file
-    ):
-        link = get_path_to_test_file
-        response = get_link_response(link, access_local_file_with_requests)
+    def test_get_soup_contains_correct_data(self, http_client, get_path_to_test_file):
+        url = get_path_to_test_file
+        response = http_client.get_page(url=url)
 
         soup = get_soup(response)
 
@@ -38,11 +35,9 @@ class TestGetSoup:
 
 class TestGetNextPageUrl:
     @pytest.mark.parametrize("test_file", ["test_get_next_page_url.html"])
-    def test_get_next_page_url_gets_url(
-        self, access_local_file_with_requests, get_path_to_test_file
-    ):
-        link = get_path_to_test_file
-        response = get_link_response(link, access_local_file_with_requests)
+    def test_get_next_page_url_gets_url(self, http_client, get_path_to_test_file):
+        url = get_path_to_test_file
+        response = http_client.get_page(url=url)
         soup = get_soup(response)
         next_page_link_identifier = "func=results-next-page&result_format=001"
 
@@ -54,10 +49,10 @@ class TestGetNextPageUrl:
 
     @pytest.mark.parametrize("test_file", ["test_page.html"])
     def test_get_next_page_url_returns_None_if_url_not_found(
-        self, access_local_file_with_requests, get_path_to_test_file
+        self, http_client, get_path_to_test_file
     ):
-        link = get_path_to_test_file
-        response = get_link_response(link, access_local_file_with_requests)
+        url = get_path_to_test_file
+        response = http_client.get_page(url=url)
         soup = get_soup(response)
         next_page_link_identifier = "func=results-next-page&result_format=001"
 
@@ -69,10 +64,10 @@ class TestGetNextPageUrl:
 class TestGetCollectionInfo:
     @pytest.mark.parametrize("test_file", ["test_get_collection_info.html"])
     def test_get_collection_info_gets_collection_info(
-        self, access_local_file_with_requests, get_path_to_test_file
+        self, http_client, get_path_to_test_file
     ):
-        link = get_path_to_test_file
-        response = get_link_response(link, access_local_file_with_requests)
+        url = get_path_to_test_file
+        response = http_client.get_page(url=url)
         soup = get_soup(response)
 
         # get_collection_info is a generator function so we cast its results
@@ -101,11 +96,9 @@ class TestGetCollectionInfo:
 
 class TestGetCollectionYear:
     @pytest.mark.parametrize("test_file", ["test_get_collection_year.html"])
-    def test_get_collection_year_gets_year(
-        self, get_path_to_test_file, access_local_file_with_requests
-    ):
-        link = get_path_to_test_file
-        response = get_link_response(link, access_local_file_with_requests)
+    def test_get_collection_year_gets_year(self, get_path_to_test_file, http_client):
+        url = get_path_to_test_file
+        response = http_client.get_page(url=url)
         soup = get_soup(response)
 
         res = get_collection_year(soup)
@@ -114,10 +107,10 @@ class TestGetCollectionYear:
 
     @pytest.mark.parametrize("test_file", ["test_page.html"])
     def test_get_collection_year_returns_None_if_year_is_not_found(
-        self, get_path_to_test_file, access_local_file_with_requests
+        self, get_path_to_test_file, http_client
     ):
-        link = get_path_to_test_file
-        response = get_link_response(link, access_local_file_with_requests)
+        url = get_path_to_test_file
+        response = http_client.get_page(url=url)
         soup = get_soup(response)
 
         res = get_collection_year(soup)
@@ -128,10 +121,10 @@ class TestGetCollectionYear:
 class TestGetLinkForTableView:
     @pytest.mark.parametrize("test_file", ["test_get_link_for_table_view.html"])
     def test_get_link_for_table_view_gets_link(
-        self, get_path_to_test_file, access_local_file_with_requests
+        self, get_path_to_test_file, http_client
     ):
-        link = get_path_to_test_file
-        response = get_link_response(link, access_local_file_with_requests)
+        url = get_path_to_test_file
+        response = http_client.get_page(url=url)
         soup = get_soup(response)
 
         res = get_link_for_table_view(soup)
@@ -140,10 +133,10 @@ class TestGetLinkForTableView:
 
     @pytest.mark.parametrize("test_file", ["test_page.html"])
     def test_get_link_for_table_view_returns_None_if_link_not_found(
-        self, get_path_to_test_file, access_local_file_with_requests
+        self, get_path_to_test_file, http_client
     ):
-        link = get_path_to_test_file
-        response = get_link_response(link, access_local_file_with_requests)
+        url = get_path_to_test_file
+        response = http_client.get_page(url=url)
         soup = get_soup(response)
 
         res = get_link_for_table_view(soup)
