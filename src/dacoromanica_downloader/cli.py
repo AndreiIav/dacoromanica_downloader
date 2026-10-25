@@ -4,7 +4,8 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from dacoromanica_downloader.application import run_dacoromanica_downloader
-from dacoromanica_downloader.get_starting_urls import EmptyFileError, get_starting_urls
+from dacoromanica_downloader.custom_exceptions import EmptyFileError, NoFileToDownload
+from dacoromanica_downloader.path_utils import get_starting_urls
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -44,7 +45,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             starting_urls=starting_urls,
             destination_folder=arguments.destination,
         )
-    except (EmptyFileError, OSError) as error:
+    except (EmptyFileError, OSError, NoFileToDownload) as error:
         print(f"Error: {error}", file=sys.stderr)
         return 1
 
