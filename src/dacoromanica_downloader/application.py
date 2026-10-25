@@ -81,7 +81,7 @@ def run_dacoromanica_downloader(
             table_view_url = get_link_for_table_view(soup=starting_url_soup)
             if not table_view_url:
                 print(
-                    f"'{starting_url}' is not a valid Dacoromanica collections"
+                    f"'{starting_url}' is not a valid Dacoromanica collections "
                     "page. No files can be downloaded from this link."
                 )
                 continue
@@ -140,6 +140,7 @@ def run_dacoromanica_downloader(
                 client.download_file(url=collection.pdf_link, file_path=file_path)
             except requests.RequestException as e:
                 print(f"'{collection.downloaded_file_name}' not downloaded: {e}")
+                continue
             print(
                 f"'{collection.downloaded_file_name}' downloaded in "
                 f"'{destination_folder.absolute()}' folder."
